@@ -1002,41 +1002,6 @@
         .login-help { text-align:center;color:var(--text-muted);font-size:11px;line-height:1.45;margin-top:12px; }
         .admin-only { display:none; }
 
-        .tab-badge {
-            display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
-            margin-left:5px;border-radius:999px;background:var(--danger-color);color:#fff;font-size:11px;font-weight:900;
-            box-sizing:border-box;vertical-align:middle;
-        }
-        .incoming-wrap { padding-bottom:30px; }
-        .incoming-hero {
-            margin:8px 0 16px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#fff,#fff8f2);
-            border:1px solid rgba(211,84,0,.10);box-shadow:var(--shadow-premium);
-        }
-        .incoming-hero-title { display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900; }
-        .incoming-hero-sub { margin-top:5px;color:var(--text-muted);font-size:12px;font-weight:600; }
-        .incoming-count-pill { margin-left:auto;background:var(--primary-color);color:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900; }
-        .incoming-list { display:flex;flex-direction:column;gap:14px; }
-        .incoming-card { background:#fff;border-radius:20px;padding:16px;box-shadow:var(--shadow-premium);border:1px solid rgba(44,26,17,.07); }
-        .incoming-top { display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px; }
-        .incoming-name { font-size:21px;font-weight:950;color:var(--primary-color);word-break:break-word; }
-        .incoming-time { font-size:11px;color:var(--text-muted);font-weight:700;white-space:nowrap; }
-        .incoming-items { display:flex;flex-direction:column;gap:7px;margin:10px 0 14px; }
-        .incoming-item { display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:650;padding:9px 10px;border-radius:10px;background:#FAF4EE; }
-        .incoming-total { display:flex;justify-content:space-between;align-items:center;border-top:2px solid #FAF4EE;padding-top:12px;font-size:18px;font-weight:900;color:var(--primary-color); }
-        .incoming-actions { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px; }
-        .incoming-action { border:0;border-radius:13px;padding:13px;font-weight:900;cursor:pointer;font-size:14px; }
-        .incoming-accept { background:var(--success-color);color:#fff;box-shadow:0 5px 14px rgba(46,204,113,.18); }
-        .incoming-reject { background:#FDEDEC;color:var(--danger-color); }
-        .incoming-action:disabled { opacity:.55;cursor:not-allowed; }
-        .incoming-empty { text-align:center;padding:55px 18px;color:var(--text-muted);background:#fff;border-radius:20px;box-shadow:var(--shadow-premium); }
-        .incoming-empty i { font-size:34px;opacity:.45;margin-bottom:12px; }
-        .customer-name-field { margin:0 0 16px; }
-        .customer-name-field label { display:block;font-size:11px;font-weight:900;color:var(--text-muted);letter-spacing:.8px;margin-bottom:6px; }
-        .customer-name-field input { width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid rgba(44,26,17,.13);border-radius:12px;outline:none;font-size:16px;font-weight:650;color:var(--text-main);background:#fff; }
-        .customer-name-field input:focus { border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(211,84,0,.10); }
-        .customer-name-error { display:none;color:var(--danger-color);font-size:11px;font-weight:800;margin-top:6px; }
-        .pending-status-box { margin:12px 0 16px;padding:12px 14px;border-radius:13px;background:#FFF6E8;color:#9A5B00;font-size:12px;font-weight:800; }
-
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
@@ -1063,7 +1028,6 @@
 
     <div class="tab-bar admin-only" id="admin-tab-bar">
         <button id="tab-btn-order" class="tab-btn active" onclick="switchTab('order-view', event)">📝 Take Order</button>
-        <button id="tab-btn-incoming" class="tab-btn" onclick="switchTab('incoming-view', event)">🔔 Incoming <span id="incoming-count-badge" class="tab-badge" style="display:none;">0</span></button>
         <button id="tab-btn-dashboard" class="tab-btn" onclick="switchTab('dashboard-view', event)">📊 Dashboard</button>
     </div>
 
@@ -1122,26 +1086,15 @@
     <div id="order-success-view" class="success-page">
         <div class="success-card">
             <div class="success-check">✓</div>
-            <h2 id="success-title">Order Request Sent!</h2>
-            <p class="success-subtitle" id="success-subtitle">Your order request has been sent for confirmation.</p>
-            <div class="success-order-number" id="success-order-number">Pending Confirmation</div>
-            <div id="success-pending-box" class="pending-status-box">Please wait while the shop confirms your order.</div>
+            <h2>Order Placed!</h2>
+            <p class="success-subtitle">Thank you for ordering from Mad Over Waffle.</p>
+            <div class="success-order-number" id="success-order-number">Order #1</div>
             <div class="success-details">
                 <div class="success-detail-row"><span>Order time</span><strong id="success-order-time">--</strong></div>
             </div>
             <div class="success-items" id="success-items"></div>
             <div class="success-total"><span>Final Amount</span><span id="success-total">₹0</span></div>
             <button class="success-new-order" onclick="editLastCustomerOrder()"><i class="fas fa-pen"></i> Edit Order</button>
-        </div>
-    </div>
-
-    <div id="incoming-view" class="app-section">
-        <div class="incoming-wrap">
-            <div class="incoming-hero">
-                <div class="incoming-hero-title"><i class="fas fa-bell"></i><span>Incoming Orders</span><span id="incoming-hero-count" class="incoming-count-pill">0</span></div>
-                <div class="incoming-hero-sub">Customer requests waiting for name verification and approval.</div>
-            </div>
-            <div id="incoming-orders-list" class="incoming-list"></div>
         </div>
     </div>
 
@@ -1179,12 +1132,7 @@
 
     <div class="modal-overlay" id="order-modal">
         <div class="modal-card">
-            <div class="modal-title" id="order-modal-title">Confirm Order</div>
-            <div id="customer-name-field" class="customer-name-field">
-                <label for="customer-name">YOUR NAME *</label>
-                <input id="customer-name" type="text" maxlength="60" autocomplete="name" placeholder="Enter your name">
-                <div id="customer-name-error" class="customer-name-error">Please enter your name.</div>
-            </div>
+            <div class="modal-title">Save Order Summary</div>
             <div class="modal-items-list" id="modal-items-content"></div>
             <div class="modal-total-row">
                 <span>Total Order Amount</span>
@@ -1302,8 +1250,6 @@ const menuData = {
         let editingOrderId = null; 
         let editingOrderDate = null;
 let isWhatsappOrder = false;
-let currentIncomingOrders = [];
-let incomingActionBusy = new Set();
 
         function triggerPremiumNotification(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -1361,7 +1307,6 @@ let incomingActionBusy = new Set();
                 subtitle.innerText = 'Admin Order App';
                 adminButton.style.display = 'none';
                 document.getElementById('whatsapp-order-option').style.display = 'block';
-                renderIncomingOrders(currentIncomingOrders);
             } else {
                 tabBar.style.display = 'none';
                 status.style.display = 'none';
@@ -1398,14 +1343,10 @@ let incomingActionBusy = new Set();
             document.getElementById(tabId).classList.add('active');
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             if (event) event.currentTarget.classList.add('active');
-            else if (tabId === 'dashboard-view') document.getElementById('tab-btn-dashboard').classList.add('active');
-            else if (tabId === 'incoming-view') document.getElementById('tab-btn-incoming').classList.add('active');
+            else document.getElementById('tab-btn-dashboard').classList.add('active');
             document.getElementById('sticky-footer').style.display = 'none';
             if (tabId === 'dashboard-view') {
                 loadDashboardData();
-                window.scrollTo({top:0,behavior:'smooth'});
-            } else if (tabId === 'incoming-view') {
-                renderIncomingOrders(currentIncomingOrders);
                 window.scrollTo({top:0,behavior:'smooth'});
             }
         }
@@ -1425,11 +1366,10 @@ let incomingActionBusy = new Set();
             const password = document.getElementById('admin-password').value;
             if (window.mowFirebaseAdminLogin) {
                 window.mowFirebaseAdminLogin(password).then(() => {
-                    isAdminMode = true;
-                    window.isAdminMode = true;
+                    // Firebase auth state is the source of truth. onAuthStateChanged
+                    // will switch the UI to admin mode after Firebase confirms the
+                    // authenticated account is admin@madoverwaffle.app.
                     closeAdminLogin();
-                    applyModeUI();
-                    showOrderView();
                     triggerPremiumNotification('Admin mode enabled.', 'success');
                 }).catch((error) => {
                     const errorBox = document.getElementById('admin-login-error');
@@ -1455,20 +1395,12 @@ let incomingActionBusy = new Set();
             triggerPremiumNotification('Returned to customer mode.', 'info');
         }
 
-        function showCustomerSuccess(orderRecord, orderNumber, isPending = false) {
+        function showCustomerSuccess(orderRecord, orderNumber) {
             document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById('order-success-view').style.display = 'flex';
             document.getElementById('sticky-footer').style.display = 'none';
-            const pending = isPending || orderRecord.status === 'pending';
-            document.getElementById('success-title').innerText = pending ? 'Order Request Sent!' : 'Order Confirmed!';
-            document.getElementById('success-subtitle').innerText = pending ? 'Your order is waiting for shop confirmation.' : 'Thank you for ordering from Mad Over Waffle.';
-            document.getElementById('success-order-number').innerText = pending ? 'Pending Confirmation' : ('Order #' + orderNumber);
-            document.getElementById('success-pending-box').style.display = pending ? 'block' : 'none';
+            document.getElementById('success-order-number').innerText = 'Order #' + orderNumber;
             document.getElementById('success-order-time').innerText = orderRecord.time;
-            try {
-                if (orderRecord.id != null) localStorage.setItem('mow_last_customer_request_id', String(orderRecord.id));
-                localStorage.setItem('mow_last_customer_request_state', pending ? 'pending' : 'accepted');
-            } catch(e) {}
                         const items = document.getElementById('success-items');
             items.innerHTML = '';
             orderRecord.items.forEach(item => {
@@ -1744,17 +1676,6 @@ function startNewCustomerOrder() {
             if (data.itemsOrdered.length === 0) return;
 
             pendingSavePayload = data;
-            const nameField = document.getElementById('customer-name-field');
-            const nameInput = document.getElementById('customer-name');
-            const nameError = document.getElementById('customer-name-error');
-            const isCustomerNewOrder = !isAdminMode && editingOrderId === null;
-            nameField.style.display = isCustomerNewOrder ? 'block' : 'none';
-            nameError.style.display = 'none';
-            document.getElementById('order-modal-title').innerText = editingOrderId !== null ? 'Confirm Order Update' : (isAdminMode ? 'Save Admin Order' : 'Confirm Order');
-            if (isCustomerNewOrder) {
-                nameInput.value = '';
-                setTimeout(() => nameInput.focus(), 80);
-            }
             const container = document.getElementById('modal-items-content');
             container.innerHTML = '';
 
@@ -1791,103 +1712,86 @@ document.getElementById('modal-grand-total').innerText = '₹' + data.grossTotal
 
         async function confirmAndCommitOrder() {
             if (!pendingSavePayload) return;
+            if (window.mowFirebaseAuthReady) {
+                try { await window.mowFirebaseAuthReady; } catch(e) {}
+            }
 
-            const isNewCustomerOrder = !isAdminMode && editingOrderId === null;
-            let customerName = '';
-            if (isNewCustomerOrder) {
-                customerName = (document.getElementById('customer-name')?.value || '').trim().replace(/\s+/g, ' ');
-                if (!customerName) {
-                    document.getElementById('customer-name-error').style.display = 'block';
-                    document.getElementById('customer-name')?.focus();
-                    return;
+            let targetDate = getLocalDateString();
+            let database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
+            let originalTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true});
+            let existingItemsMap = {};
+
+            if (editingOrderId !== null && editingOrderDate !== null) {
+                targetDate = editingOrderDate;
+                if (database[targetDate]) {
+                    const originalOrder = database[targetDate].find(o => o.id === editingOrderId);
+                    if (originalOrder) {
+                        window.editingOrderNumber = originalOrder.orderNumber || null;
+                        window.editingCustomerUid = originalOrder.customerUid || null;
+                        if (originalOrder.time) originalTime = originalOrder.time;
+                        if (originalOrder.items) {
+                            originalOrder.items.forEach(oldItem => {
+                                existingItemsMap[oldItem.name] = oldItem.delivered || false;
+                            });
+                        }
+                    }
+                    database[targetDate] = database[targetDate].filter(order => order.id !== editingOrderId);
                 }
             }
 
-            const confirmButton = document.querySelector('#order-modal .btn-modal-confirm');
-            if (confirmButton) { confirmButton.disabled = true; confirmButton.dataset.originalText = confirmButton.innerText; confirmButton.innerText = 'Saving...'; }
-
-            try {
-                if (window.mowFirebaseAuthReady) await window.mowFirebaseAuthReady;
-                if (!window.mowFirebaseReady || !window.mowFirebaseCurrentUser) throw new Error('Connection to the ordering service is not ready.');
-
-                const targetDate = editingOrderDate || getLocalDateString();
-                let originalTime = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:true});
-                let existingItemsMap = {};
-                let originalRecord = null;
-
-                if (editingOrderId !== null && editingOrderDate !== null) {
-                    const database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
-                    originalRecord = (database[targetDate] || []).find(o => o.id === editingOrderId) || null;
-                    if (!originalRecord) throw new Error('This order is no longer available. Please refresh and try again.');
-                    if (originalRecord.time) originalTime = originalRecord.time;
-                    (originalRecord.items || []).forEach(oldItem => existingItemsMap[oldItem.name] = !!oldItem.delivered);
-                }
-
-                isWhatsappOrder = isAdminMode && !!document.getElementById('whatsapp-order')?.checked;
-                const wasEditing = editingOrderId !== null;
-                const orderId = wasEditing ? editingOrderId : makeLocalOrderId();
-
-                const cleanSaveRecord = {
-                    whatsappOrder: isWhatsappOrder,
-                    id: orderId,
-                    orderNumber: wasEditing ? (originalRecord?.orderNumber || null) : null,
-                    customerUid: wasEditing ? (originalRecord?.customerUid || null) : (window.mowFirebaseCurrentUser && !isAdminMode ? window.mowFirebaseCurrentUser.uid : null),
-                    customerName: wasEditing ? (originalRecord?.customerName || '') : (isAdminMode ? '' : customerName),
-                    status: wasEditing ? (originalRecord?.status || 'accepted') : (isAdminMode ? 'accepted' : 'pending'),
-                    source: isAdminMode ? 'admin' : 'customer',
-                    time: originalTime,
-                    items: pendingSavePayload.itemsOrdered.map(i => ({
-                        name: i.name, qty: i.qty, parcelCount: i.parcelCount, totalCost: i.totalCost,
-                        delivered: existingItemsMap[i.name] !== undefined ? existingItemsMap[i.name] : false
-                    })),
-                    total: pendingSavePayload.grossTotal
-                };
-
-                let savedRecord = cleanSaveRecord;
-                if (wasEditing) {
-                    savedRecord = await window.mowFirebaseUpdateOrder(targetDate, cleanSaveRecord);
-                } else if (isAdminMode) {
-                    savedRecord = await window.mowFirebaseCreateAdminOrder(targetDate, cleanSaveRecord);
-                } else {
-                    savedRecord = await window.mowFirebaseCreateCustomerOrder(targetDate, cleanSaveRecord);
-                }
-
-                // Update the local cache immediately so the customer can edit the pending request
-                // even before Firestore's realtime listener round-trip completes.
-                if (!isAdminMode) {
-                    try {
-                        const localDb = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
-                        localDb[targetDate] = localDb[targetDate] || [];
-                        localDb[targetDate] = localDb[targetDate].filter(o => o.id !== savedRecord.id);
-                        localDb[targetDate].push(savedRecord);
-                        localStorage.setItem('mow_sales_db', JSON.stringify(localDb));
-                        localStorage.setItem('mow_last_customer_request_id', String(savedRecord.id));
-                        localStorage.setItem('mow_last_customer_request_state', savedRecord.status || 'pending');
-                    } catch(e) { console.warn('Local customer cache update failed:', e); }
-                }
-
-                closeOrderModal();
-                resetOrderForm();
-
-                if (!isAdminMode && !wasEditing) {
-                    showCustomerSuccess(savedRecord, null, true);
-                } else if (!isAdminMode) {
-                    showCustomerSuccess(savedRecord, savedRecord.orderNumber, savedRecord.status === 'pending');
-                } else {
-                    triggerPremiumNotification(wasEditing ? 'Order updated successfully!' : 'Admin order saved successfully!', 'success');
-                    switchTab('dashboard-view');
-                }
-            } catch (error) {
-                console.error('Order save failed:', error);
-                triggerPremiumNotification(error?.message || 'Could not save the order. Please try again.', 'danger');
-            } finally {
-                if (confirmButton) { confirmButton.disabled = false; confirmButton.innerText = confirmButton.dataset.originalText || 'Confirm'; }
+            if (!database[targetDate]) {
+                database[targetDate] = [];
             }
-        }
 
-        function makeLocalOrderId() {
-            const randomPart = Math.floor(Math.random() * 1000);
-            return (Date.now() * 1000) + randomPart;
+            isWhatsappOrder = isAdminMode && (document.getElementById('whatsapp-order')?.checked || false);
+
+            const wasEditing = editingOrderId !== null;
+            let preservedOrderNumber = null;
+            let preservedCustomerUid = null;
+            if (wasEditing && database[targetDate]) {
+                // The original order was removed above, so retrieve its metadata from the pending local snapshot when available.
+                // For normal edits the original order number is also carried in editingOrderNumber.
+                preservedOrderNumber = window.editingOrderNumber || null;
+                preservedCustomerUid = window.editingCustomerUid || null;
+            }
+            if (!preservedOrderNumber) {
+                // New orders get their number from a Firestore transaction so two devices
+                // can never claim the same order number for the same day.
+                if (!window.mowFirebaseNextOrderNumber) {
+                    throw new Error('Order numbering service is not ready.');
+                }
+                preservedOrderNumber = await window.mowFirebaseNextOrderNumber(targetDate);
+            }
+            const cleanSaveRecord = {
+                whatsappOrder: isWhatsappOrder,
+                id: editingOrderId !== null ? editingOrderId : Date.now(),
+                orderNumber: preservedOrderNumber,
+                customerUid: preservedCustomerUid || (window.mowFirebaseCurrentUser && !isAdminMode ? window.mowFirebaseCurrentUser.uid : null),
+                time: originalTime,
+                items: pendingSavePayload.itemsOrdered.map(i => ({
+                    name: i.name,
+                    qty: i.qty,
+                    parcelCount: i.parcelCount,
+                    totalCost: i.totalCost,
+                    delivered: existingItemsMap[i.name] !== undefined ? existingItemsMap[i.name] : false
+                })),
+                total: pendingSavePayload.grossTotal
+            };
+
+            const orderNumber = cleanSaveRecord.orderNumber;
+            database[targetDate].push(cleanSaveRecord);
+            await window.mowRemoteSetDatabase(database);
+
+            closeOrderModal();
+            const messageText = wasEditing ? "Order updated successfully!" : "Order placed successfully!";
+            resetOrderForm();
+
+            if (!isAdminMode) {
+                showCustomerSuccess(cleanSaveRecord, orderNumber);
+            } else {
+                triggerPremiumNotification(messageText, "success");
+                if (isAdminMode) switchTab('dashboard-view');
+            }
         }
 
         function resetOrderForm() {
@@ -1913,10 +1817,6 @@ document.getElementById('modal-grand-total').innerText = '₹' + data.grossTotal
             window.editingCustomerUid = null;
             const wa=document.getElementById('whatsapp-order');
             if(wa){wa.checked=false;}
-            const nameInput=document.getElementById('customer-name');
-            if(nameInput) nameInput.value='';
-            const nameError=document.getElementById('customer-name-error');
-            if(nameError) nameError.style.display='none';
             updateTotal();
         }
 
@@ -2057,74 +1957,6 @@ document.getElementById('modal-grand-total').innerText = '₹' + data.grossTotal
             return '#ffffff';
         }
 
-        function renderIncomingOrders(orders = []) {
-            currentIncomingOrders = Array.isArray(orders) ? orders.slice() : [];
-            const list = document.getElementById('incoming-orders-list');
-            const badge = document.getElementById('incoming-count-badge');
-            const heroCount = document.getElementById('incoming-hero-count');
-            const count = currentIncomingOrders.length;
-            if (badge) { badge.innerText = count; badge.style.display = count > 0 ? 'inline-flex' : 'none'; }
-            if (heroCount) heroCount.innerText = count;
-            if (!list) return;
-
-            if (!count) {
-                list.innerHTML = `<div class="incoming-empty"><i class="fas fa-check-circle"></i><div style="font-size:16px;font-weight:900;color:var(--text-main);">No pending requests</div><div style="font-size:12px;margin-top:6px;">New customer orders will appear here instantly.</div></div>`;
-                return;
-            }
-
-            list.innerHTML = '';
-            currentIncomingOrders.forEach(order => {
-                const card = document.createElement('div');
-                card.className = 'incoming-card';
-                const items = Array.isArray(order.items) ? order.items : [];
-                card.innerHTML = `
-                    <div class="incoming-top">
-                        <div><div class="incoming-name">${escapeHtml(order.customerName || 'Customer')}</div><div style="font-size:11px;color:var(--text-muted);font-weight:700;margin-top:3px;">Customer request</div></div>
-                        <div class="incoming-time">${escapeHtml(order.time || '')}</div>
-                    </div>
-                    <div class="incoming-items">${items.map(i => `<div class="incoming-item"><span>${escapeHtml(i.name)} × ${Number(i.qty)||0}${i.parcelCount ? ` <small style="color:var(--primary-color);">(parcel ×${Number(i.parcelCount)||0})</small>` : ''}</span><strong>₹${Number(i.totalCost)||0}</strong></div>`).join('')}</div>
-                    <div class="incoming-total"><span>Total</span><span>₹${Number(order.total)||0}</span></div>
-                    <div class="incoming-actions">
-                        <button class="incoming-action incoming-reject" type="button"><i class="fas fa-xmark"></i> Reject</button>
-                        <button class="incoming-action incoming-accept" type="button"><i class="fas fa-check"></i> Accept</button>
-                    </div>`;
-                const buttons = card.querySelectorAll('button');
-                buttons[0].addEventListener('click', () => rejectIncomingOrder(order.docId));
-                buttons[1].addEventListener('click', () => acceptIncomingOrder(order.docId));
-                list.appendChild(card);
-            });
-        }
-
-        async function acceptIncomingOrder(docId) {
-            if (!docId || incomingActionBusy.has(docId)) return;
-            incomingActionBusy.add(docId);
-            try {
-                if (!window.mowFirebaseAcceptIncomingOrder) throw new Error('Approval service is not ready.');
-                await window.mowFirebaseAcceptIncomingOrder(docId);
-                triggerPremiumNotification('Order accepted and added to the dashboard.', 'success');
-            } catch (error) {
-                console.error(error);
-                triggerPremiumNotification(error?.message || 'Could not accept this order.', 'danger');
-            } finally { incomingActionBusy.delete(docId); }
-        }
-
-        async function rejectIncomingOrder(docId) {
-            if (!docId || incomingActionBusy.has(docId)) return;
-            incomingActionBusy.add(docId);
-            try {
-                if (!window.mowFirebaseRejectIncomingOrder) throw new Error('Rejection service is not ready.');
-                await window.mowFirebaseRejectIncomingOrder(docId);
-                triggerPremiumNotification('Order request rejected and removed.', 'danger');
-            } catch (error) {
-                console.error(error);
-                triggerPremiumNotification(error?.message || 'Could not reject this order.', 'danger');
-            } finally { incomingActionBusy.delete(docId); }
-        }
-
-        function escapeHtml(value) {
-            return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
-        }
-
         function calculateEodSummary() {
             const picker = document.getElementById('dashboard-date');
             if (!picker) return;
@@ -2183,7 +2015,7 @@ document.getElementById('modal-grand-total').innerText = '₹' + data.grossTotal
                 card.className = fullyDeliveredClass;
                 card.innerHTML = `
                     <div class="order-header">
-                        <span>${order.customerName ? ('<strong style="color:var(--primary-color);">' + escapeHtml(order.customerName) + '</strong> · ') : ''}Order #${order.orderNumber || index + 1} ${order.whatsappOrder ? '<span style="background:#25D366;color:#fff;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:700;"><i class="fab fa-whatsapp"></i> WhatsApp</span>' : ''}</span>
+                        <span>Order #${order.orderNumber || index + 1} ${order.whatsappOrder ? '<span style="background:#25D366;color:#fff;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:700;"><i class="fab fa-whatsapp"></i> WhatsApp</span>' : ''}</span>
                         <span>Time: ${order.time}</span>
                     </div>
                     ${itemsListHtml}
@@ -2364,74 +2196,22 @@ function writeLocalCache(database) {
 
 function rebuildCache(snapshot) {
     const db = {};
-    const pending = [];
     snapshot.forEach(snap => {
         const data = snap.data();
         if (!data.dateKey) return;
-        const status = data.status || 'accepted'; // backwards compatibility for old orders
-        const record = {
+        if (!db[data.dateKey]) db[data.dateKey] = [];
+        db[data.dateKey].push({
             id: data.orderId,
             orderNumber: data.orderNumber || null,
             customerUid: data.customerUid || null,
-            customerName: data.customerName || '',
             whatsappOrder: !!data.whatsappOrder,
-            status,
-            source: data.source || (data.customerUid ? 'customer' : 'admin'),
             time: data.time || '',
             items: Array.isArray(data.items) ? data.items : [],
             total: Number(data.total) || 0
-        };
-        if (status === 'pending') {
-            if (isAdminUser(currentUser)) pending.push({ ...record, docId: snap.id });
-            return;
-        }
-        if (status !== 'accepted') return;
-        if (!db[data.dateKey]) db[data.dateKey] = [];
-        db[data.dateKey].push(record);
+        });
     });
     Object.keys(db).forEach(k => db[k].sort((a,b) => (Number(a.orderNumber)||999999) - (Number(b.orderNumber)||999999)));
-    pending.sort((a,b) => String(a.time).localeCompare(String(b.time)));
-
-    // If the customer's last pending request disappeared from their query, it was rejected/deleted.
-    if (!isAdminUser(currentUser)) {
-        try {
-            const lastId = localStorage.getItem('mow_last_customer_request_id');
-            const lastState = localStorage.getItem('mow_last_customer_request_state');
-            const stillExists = Object.values(db).some(list => (list || []).some(o => String(o.id) === String(lastId)));
-            if (lastId && lastState === 'pending' && !stillExists) {
-                localStorage.setItem('mow_last_customer_request_state', 'rejected');
-                if (typeof window.triggerPremiumNotification === 'function') {
-                    window.triggerPremiumNotification('Your order request was not accepted by the shop.', 'danger');
-                }
-                const successTitle = document.getElementById('success-title');
-                if (successTitle && document.getElementById('order-success-view')?.style.display === 'flex') {
-                    successTitle.innerText = 'Order Not Accepted';
-                    document.getElementById('success-subtitle').innerText = 'The shop did not accept this request. Please place a new order if needed.';
-                    document.getElementById('success-order-number').innerText = 'Request Rejected';
-                    document.getElementById('success-pending-box').style.display = 'none';
-                }
-            }
-        } catch(e) {}
-    }
-    // Keep the customer's confirmation screen synchronized with accept/reject actions.
-    if (!isAdminUser(currentUser)) {
-        try {
-            const lastId = localStorage.getItem('mow_last_customer_request_id');
-            const accepted = Object.values(db).flat().find(o => String(o.id) === String(lastId));
-            if (accepted) {
-                localStorage.setItem('mow_last_customer_request_state', 'accepted');
-                const successView = document.getElementById('order-success-view');
-                if (successView?.style.display === 'flex') {
-                    document.getElementById('success-title').innerText = 'Order Confirmed!';
-                    document.getElementById('success-subtitle').innerText = 'Thank you for ordering from Mad Over Waffle.';
-                    document.getElementById('success-order-number').innerText = 'Order #' + (accepted.orderNumber || '—');
-                    document.getElementById('success-pending-box').style.display = 'none';
-                }
-            }
-        } catch(e) {}
-    }
     writeLocalCache(db);
-    if (isAdminUser(currentUser) && typeof window.renderIncomingOrders === 'function') window.renderIncomingOrders(pending);
 }
 
 function startOrderListener(user) {
@@ -2495,101 +2275,111 @@ async function bootstrapOrderCounters() {
     }
 }
 
-function orderDocId(dateKey, orderId) {
-    return `${dateKey}_${orderId}`;
-}
+async function syncDatabase(database) {
+    if (!fbReady || !currentUser) return;
+    const admin = isAdminUser(currentUser);
+    const visibleOrders = [];
+    Object.entries(database || {}).forEach(([dateKey, orders]) => {
+        (orders || []).forEach(order => {
+            if (!order || order.id == null) return;
+            // Customers can only write their own orders. Admin can write any order.
+            if (!admin && order.customerUid && order.customerUid !== currentUser.uid) return;
+            visibleOrders.push({dateKey, order});
+        });
+    });
 
-function cleanOrderPayload(dateKey, record) {
-    const payload = {
-        dateKey,
-        orderId: Number(record.id),
-        orderNumber: record.orderNumber == null ? null : Number(record.orderNumber),
-        customerUid: record.customerUid || null,
-        customerName: String(record.customerName || '').trim(),
-        whatsappOrder: !!record.whatsappOrder,
-        status: record.status || 'accepted',
-        source: record.source || (record.customerUid ? 'customer' : 'admin'),
-        time: record.time || '',
-        items: Array.isArray(record.items) ? record.items : [],
-        total: Number(record.total) || 0,
-        updatedAt: serverTimestamp()
-    };
-    return payload;
-}
-
-window.mowFirebaseCreateCustomerOrder = async (dateKey, record) => {
-    if (!fbReady || !currentUser || isAdminUser(currentUser)) throw new Error('Customer session is not ready.');
-    if (!record.customerName) throw new Error('Name is required.');
-    const payload = cleanOrderPayload(dateKey, { ...record, status:'pending', source:'customer', customerUid:currentUser.uid, orderNumber:null });
-    payload.createdAt = serverTimestamp();
-    const ref = doc(fbDb, 'orders', orderDocId(dateKey, record.id));
-    await setDoc(ref, payload);
-    return { ...record, status:'pending', source:'customer', customerUid:currentUser.uid, orderNumber:null, customerName:payload.customerName };
-};
-
-window.mowFirebaseCreateAdminOrder = async (dateKey, record) => {
-    if (!fbReady || !currentUser || !isAdminUser(currentUser)) throw new Error('Admin session is not ready.');
-    const orderNumber = await window.mowFirebaseNextOrderNumber(dateKey);
-    const finalRecord = { ...record, status:'accepted', source:'admin', orderNumber, customerUid:null, customerName:'' };
-    const payload = cleanOrderPayload(dateKey, finalRecord);
-    payload.createdAt = serverTimestamp();
-    const ref = doc(fbDb, 'orders', orderDocId(dateKey, record.id));
-    await setDoc(ref, payload);
-    return finalRecord;
-};
-
-window.mowFirebaseUpdateOrder = async (dateKey, record) => {
-    if (!fbReady || !currentUser) throw new Error('Firebase is not ready.');
-    const ref = doc(fbDb, 'orders', orderDocId(dateKey, record.id));
-    const finalRecord = { ...record };
-    if (!isAdminUser(currentUser)) {
-        if (record.customerUid !== currentUser.uid) throw new Error('You can only update your own order.');
-        finalRecord.status = record.status || 'pending';
-        finalRecord.source = 'customer';
-    } else {
-        finalRecord.status = record.status || 'accepted';
-        finalRecord.source = 'admin';
+    const desiredIds = new Set();
+    const writes = [];
+    for (const {dateKey, order} of visibleOrders) {
+        const id = `${dateKey}_${order.id}`;
+        desiredIds.add(id);
+        const owner = order.customerUid || (admin ? (order.customerUid || currentUser.uid) : currentUser.uid);
+        const payload = {
+            dateKey, orderId: Number(order.id), orderNumber: Number(order.orderNumber) || null,
+            customerUid: owner, whatsappOrder: !!order.whatsappOrder, time: order.time || '',
+            items: Array.isArray(order.items) ? order.items : [], total: Number(order.total) || 0,
+            updatedAt: serverTimestamp()
+        };
+        if (!order.createdAt) payload.createdAt = serverTimestamp();
+        writes.push(setDoc(doc(fbDb, 'orders', id), payload, {merge:true}));
     }
-    const payload = cleanOrderPayload(dateKey, finalRecord);
-    await setDoc(ref, payload, { merge:true });
-    return finalRecord;
-};
+    await Promise.all(writes);
 
-window.mowFirebaseAcceptIncomingOrder = async (docId) => {
-    if (!fbReady || !currentUser || !isAdminUser(currentUser)) throw new Error('Admin session is not ready.');
-    const ref = doc(fbDb, 'orders', docId);
-    return await runTransaction(fbDb, async transaction => {
-        const snap = await transaction.get(ref);
-        if (!snap.exists()) throw new Error('This order is no longer pending.');
-        const data = snap.data();
-        if ((data.status || 'accepted') !== 'pending') throw new Error('This order has already been handled.');
-        const dateKey = data.dateKey || getLocalDateString();
-        const counterRef = doc(fbDb, 'orderCounters', dateKey);
-        const counterSnap = await transaction.get(counterRef);
-        const next = counterSnap.exists() ? (Number(counterSnap.data().nextNumber) || 1) : 1;
-        const orderNumber = next;
-        transaction.set(counterRef, { nextNumber: orderNumber + 1, updatedAt: serverTimestamp() }, {merge:true});
-        transaction.update(ref, { status:'accepted', orderNumber, acceptedAt:serverTimestamp(), updatedAt:serverTimestamp() });
-        return orderNumber;
-    });
-};
+    // Only an admin is allowed to delete missing records. A customer edit/delete is handled by ownership rules.
+    if (admin) {
+        const existingIds = new Set();
+        Object.entries(remoteCache).forEach(([dateKey, orders]) => (orders || []).forEach(order => existingIds.add(`${dateKey}_${order.id}`)));
+        const deletes = [];
+        existingIds.forEach(id => { if (!desiredIds.has(id)) deletes.push(deleteDoc(doc(fbDb, 'orders', id))); });
+        if (deletes.length) await Promise.all(deletes);
+    }
+}
 
-window.mowFirebaseRejectIncomingOrder = async (docId) => {
-    if (!fbReady || !currentUser || !isAdminUser(currentUser)) throw new Error('Admin session is not ready.');
-    const ref = doc(fbDb, 'orders', docId);
-    await runTransaction(fbDb, async transaction => {
-        const snap = await transaction.get(ref);
-        if (!snap.exists()) return;
-        const data = snap.data();
-        if ((data.status || 'accepted') !== 'pending') throw new Error('This order has already been handled.');
-        transaction.delete(ref);
-    });
-};
+async function bootFirebase() {
+    if (!configured()) {
+        console.warn('Firebase is not configured yet. The app will use local browser storage until the config is filled in.');
+        return;
+    }
+    try {
+        fbApp = initializeApp(firebaseConfig);
+        fbAuth = getAuth(fbApp);
+        fbDb = getFirestore(fbApp);
+        fbReady = true;
+        onAuthStateChanged(fbAuth, async user => {
+            currentUser = user;
+            window.mowFirebaseCurrentUser = user;
 
+            // Firebase Authentication is the single source of truth for the UI.
+            // Admin mode is enabled only for the configured admin email.
+            const admin = isAdminUser(user);
+            isAdminMode = admin;
+            window.isAdminMode = admin;
+            if (typeof window.applyModeUI === 'function') window.applyModeUI();
+
+            if (user && firebaseAuthReadyResolve) {
+                firebaseAuthReadyResolve(user);
+                firebaseAuthReadyResolve = null;
+            }
+
+            startOrderListener(user);
+
+            if (admin) {
+                await bootstrapOrderCounters();
+            }
+
+            if (!user) {
+                try {
+                    await signInAnonymously(fbAuth);
+                } catch(e) {
+                    console.error('Anonymous sign-in failed:', e);
+                }
+            }
+        });
+    } catch (e) {
+        console.error('Firebase initialization failed:', e);
+    }
+}
+
+window.mowFirebaseAdminLogin = async (password) => {
+    if (!fbReady) throw new Error('Firebase is not configured.');
+    if (!password) throw new Error('Enter the admin password.');
+    await signInWithEmailAndPassword(fbAuth, ADMIN_EMAIL, password);
+};
+window.mowFirebaseLogout = async () => {
+    if (!fbReady) return;
+    try { await signOut(fbAuth); } catch(e) {}
+};
 window.mowRemoteSetDatabase = async (database) => {
-    // Kept for compatibility with older UI paths. New creates/updates use direct atomic order writes above.
-    try { localStorage.setItem('mow_sales_db', JSON.stringify(database || {})); }
-    catch(e) { console.error('Local cache write failed:', e); }
+    try {
+        localStorage.setItem('mow_sales_db', JSON.stringify(database));
+        if (fbReady && !currentUser) {
+            try { await Promise.race([firebaseAuthReady, new Promise(resolve => setTimeout(resolve, 8000))]); } catch(e) {}
+        }
+        await syncDatabase(database);
+    } catch(e) {
+        console.error('Firestore save failed:', e);
+        if (typeof window.triggerPremiumNotification === 'function') window.triggerPremiumNotification('Order saved locally but could not sync online.', 'danger');
+    }
 };
 
 // Expose the flag/functions used by the existing inline app code.
@@ -2602,7 +2392,6 @@ bootFirebase();
 
 <script>
 window.calculateEodSummary = typeof calculateEodSummary === 'function' ? calculateEodSummary : null;
-window.renderIncomingOrders = typeof renderIncomingOrders === 'function' ? renderIncomingOrders : null;
 window.triggerPremiumNotification = typeof triggerPremiumNotification === 'function' ? triggerPremiumNotification : null;
 </script>
 
