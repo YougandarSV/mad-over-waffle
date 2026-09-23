@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mad Over Waffle</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #D35400;      /* Deep Luxury Burnt Orange */
+            --accent-color: #E67E22;       /* Vibrant Warm Amber */
+            --bg-color: #FAF4EE;           /* Premium soft cream canvas background */
+            --card-bg: #ffffff;
+            --text-main: #2C1A11;          /* Elegant dark chocolate */
+            --text-muted: #7A6E67;         /* Warm grey-brown secondary text */
+            --danger-color: #E74C3C;       /* Premium Red */
+            --success-color: #2ECC71;      /* Premium Green */
+            --info-color: #2980B9;         /* Premium Blue */
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            
+            --shadow-premium: 0 10px 30px rgba(44, 26, 17, 0.05);
+            --shadow-interactive: 0 12px 24px rgba(211, 84, 0, 0.12);
+        }
+
+        html, body {
+            overflow-x: hidden;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            color: var(--text-main);
+            letter-spacing: -0.2px;
+        }
+
+        body {
+            padding-bottom: 120px;
+        }
+
+        /* ========================================================
+           PREMIUM NOTIFICATIONS (TOASTS)
+           ======================================================== */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 90%;
+            max-width: 380px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-left: 5px solid var(--primary-color);
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 40px rgba(44, 26, 17, 0.12);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            pointer-events: auto;
+            animation: toastSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+            transition: all 0.3s ease;
+        }
+
+        .toast.success { border-left-color: var(--success-color); }
+        .toast.danger { border-left-color: var(--danger-color); }
+        .toast.info { border-left-color: var(--info-color); }
+
+        .toast-icon {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toast-message {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        @keyframes toastSlideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .toast.dismissing {
+            transform: translateY(-20px) scale(0.9);
+            opacity: 0;
+        }
+
+        /* ========================================================
+           HEADER STYLING
+           ======================================================== */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            text-align: center;
+            padding: 28px 15px 22px 15px;
+            box-shadow: 0 10px 25px rgba(211, 84, 0, 0.15);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 26px;
+            letter-spacing: 0.5px;
+            font-weight: 900;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(44, 26, 17, 0.15);
+        }
+
+        header p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #FAF4EE;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            opacity: 0.95;
+        }
+
+        /* ========================================================
+           CORE PREMIUM LAYOUT & NAVIGATION
+           ======================================================== */
+        .tab-bar {
+            display: flex;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(44, 26, 17, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            padding: 6px;
+            margin: 15px auto;
+            max-width: 480px;
+            border-radius: var(--radius-sm);
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-weight: 700;
+            font-size: 13px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            background-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(211, 84, 0, 0.25);
+        }
+
+        .app-section {
+            display: none;
+            padding: 0 16px;
+            max-width: 500px;
+            margin: auto;
+            animation: sectionFade 0.3s ease-out;
+        }
+
+        @keyframes sectionFade {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .app-section.active {
+            display: block;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-main);
+            opacity: 0.5;
+            margin: 24px 0 12px 4px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        /* ========================================================
+           MENU SEARCH
+           ======================================================== */
+        .menu-search-panel {
+            position: sticky;
+            top: 72px;
+            z-index: 900;
+            background: rgba(250, 244, 238, 0.96);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 8px 0 12px;
+            margin-bottom: 4px;
+        }
+
+        .menu-search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid rgba(211, 84, 0, 0.10);
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(44, 26, 17, 0.07), 0 1px 2px rgba(44, 26, 17, 0.04);
+            transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+        }
+
+        .menu-search-box:focus-within {
+            border-color: rgba(211, 84, 0, 0.32);
+            box-shadow: 0 10px 28px rgba(211, 84, 0, 0.12), 0 0 0 4px rgba(211, 84, 0, 0.045);
+            transform: translateY(-1px);
+        }
+
+        .menu-search-icon {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-left: 15px;
+            pointer-events: none;
+        }
+
+        #menu-search {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 14px 42px 14px 11px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            box-sizing: border-box;
+        }
+
+        #menu-search::placeholder {
+            color: #A3968E;
+            font-weight: 500;
+        }
+
+        /* Hide the browser's built-in search X so only our premium clear button appears */
+        #menu-search::-webkit-search-cancel-button,
+        #menu-search::-webkit-search-decoration,
+        #menu-search::-webkit-search-results-button,
+        #menu-search::-webkit-search-results-decoration {
+            -webkit-appearance: none;
+            appearance: none;
+            display: none;
+        }
+
+        #menu-search::-ms-clear {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .menu-search-clear {
+            position: absolute;
+            right: 9px;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(211, 84, 0, 0.10);
+            border-radius: 50%;
+            background: linear-gradient(145deg, #fffaf7, #f4e9e1);
+            color: #8f786b;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1;
+            box-shadow: 0 3px 9px rgba(44, 26, 17, 0.08);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .menu-search-clear:hover {
+            transform: scale(1.06);
+            background: #ffffff;
+            box-shadow: 0 5px 13px rgba(44, 26, 17, 0.12);
+        }
+
+        .menu-search-clear:active {
+            transform: scale(0.94);
+        }
+
+        .menu-search-clear.visible {
+            display: flex;
+        }
+
+        .category-title.filter-hidden {
+            display: none;
+        }
+
+        .menu-no-results {
+            display: none;
+            text-align: center;
+            padding: 35px 12px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: var(--shadow-premium);
+            margin: 12px 0 20px;
+        }
+
+        /* ========================================================
+           MENU CARDS & INTERACTIVES
+           ======================================================== */
+        .menu-item {
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-premium);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                        border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(44, 26, 17, 0.015);
+        }
+
+        .menu-item.selected {
+            padding: 16px 18px;
+            background-color: #FDF2E9; 
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 24px rgba(211, 84, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .item-main-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .item-info {
+            flex-grow: 1;
+            padding-right: 12px;
+        }
+
+        .item-name {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .item-price {
+            color: var(--primary-color);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        /* ========================================================
+           ITEM-LEVEL PARCEL SELECTION ROW
+           ======================================================== */
+        .item-parcel-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            margin-top: 0;
+            padding-top: 0;
+            border-top: 1px dashed rgba(44, 26, 17, 0.06);
+            width: 100%;
+            transition: all 0.15s ease;
+        }
+
+        .item-parcel-row:not(.controls-hidden) {
+            max-height: 60px;
+            opacity: 1;
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+
+        .parcel-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* ========================================================
+           PREMIUM QUANTITY SELECTION CONTROLS
+           ======================================================== */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            min-width: 120px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn-qty {
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(44, 26, 17, 0.05);
+        }
+
+        .btn-qty-minus {
+            background-color: #ffffff;
+            color: var(--text-muted);
+            border: 1px solid rgba(44, 26, 17, 0.12);
+        }
+
+        .btn-qty-minus:active {
+            background-color: #FAF4EE;
+            transform: scale(0.9);
+        }
+
+        .btn-qty-plus {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(211, 84, 0, 0.2);
+        }
+
+        .btn-qty-plus:active {
+            transform: scale(0.9);
+            box-shadow: 0 2px 6px rgba(211, 84, 0, 0.15);
+        }
+
+        .btn-parcel {
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+        }
+
+        .qty-count {
+            font-weight: 800;
+            font-size: 15px;
+            min-width: 16px;
+            text-align: center;
+            color: var(--text-main);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .controls-hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: translateX(8px);
+        }
+
+        /* ========================================================
+           DASHBOARD & STATS STYLING
+           ======================================================== */
+        .dashboard-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-premium);
+        }
+
+        .date-picker-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .date-picker-container span {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .date-picker-container input {
+            padding: 10px 14px;
+            font-size: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(44, 26, 17, 0.1);
+            font-weight: 700;
+            color: var(--text-main);
+            outline: none;
+            background: #FAF4EE;
+        }
+
+        .luxury-profit-display {
+            background: linear-gradient(135deg, #E8F8F5, #D1F2EB);
+            padding: 24px 16px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid #A3E4D7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .luxury-profit-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: #16A085;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .stat-val {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--success-color);
+            letter-spacing: -0.5px;
+        }
+
+        .history-title {
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin: 24px 0 12px 2px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ========================================================
+           ORDER LOG CARDS WITH INLINE CHECKBOXES & COMPLETED MODIFIERS
+           ======================================================== */
+        .order-log-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-premium);
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            border-left-width: 4px;
+        }
+
+        .order-log-card.fully-delivered {
+            border: 2px solid var(--success-color);
+            border-left: 5px solid var(--success-color);
+            background-color: #FAFEFB;
+            box-shadow: 0 12px 24px rgba(46, 204, 113, 0.06);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            border-bottom: 1px dashed rgba(44, 26, 17, 0.08);
+            padding-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .order-items-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .order-item-history-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #566573;
+            font-weight: 500;
+            padding: 4px 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .order-item-history-text {
+            flex-grow: 1;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .order-item-history-text.strike-delivered {
+            text-decoration: line-through;
+            color: #A6ACAF;
+            opacity: 0.7;
+        }
+
+        /* CUSTOM CHECKBOX CONTAINER BOX */
+        .history-item-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #BDC3C7;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .history-item-checkbox.checked {
+            border-color: var(--success-color);
+            background-color: var(--success-color);
+        }
+
+        .history-item-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+            display: none;
+        }
+
+        .history-item-checkbox.checked::after {
+            display: block;
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding-top: 8px;
+        }
+
+        .order-total-price {
+            font-weight: 800;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit-history {
+            background: none;
+            border: none;
+            color: var(--info-color);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            transition: background 0.2s ease;
+        }
+
+        .btn-edit-history:active {
+            background: #EBF5FB;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            transition: background 0.2s ease;
+        }
+
+        .btn-delete:active {
+            background: #FDEDEC;
+        }
+
+        /* ========================================================
+           STICKY BOTTOM FOOTER BAR
+           ======================================================== */
+        .footer-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 -10px 30px rgba(44, 26, 17, 0.06);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        }
+
+        .total-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .total-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .total-amount {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: var(--shadow-interactive);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:disabled {
+            background: #E0DAD6 !important;
+            color: #A3968E !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+            transform: none !important;
+            opacity: 0.7;
+        }
+
+        .btn-submit:not(:disabled):active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
+        /* ========================================================
+           POPUP OVERLAY MODAL STYLING
+           ======================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(28, 16, 10, 0.4);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .modal-card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes popUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #FAF4EE;
+            padding-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .modal-items-list {
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .modal-item-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(44, 26, 17, 0.08);
+            font-weight: 500;
+        }
+
+        .modal-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 900;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-modal-confirm {
+            flex: 1.3;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-modal-cancel {
+            flex: 1;
+            background-color: #E2E4E6;
+            color: var(--text-muted);
+            border: none;
+            padding: 14px;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+        }
+
+        .no-orders {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    
+        /* CATEGORY COLORS */
+        .category-title.brownies-title{
+            background:#6D4C41;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+        .category-title.waffles-title{
+            background:#D4A017;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+        .category-title.redvelvet-title{
+            background:#C62828;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+        .category-title.pancakes-title{
+            background:#1565C0;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+        .category-title.hotchocolate-title{
+            background:#8E44AD;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+
+        #brownies-list .menu-item{
+            border-left:5px solid #6D4C41;
+            background:#FBF7F5;
+        }
+
+        #waffles-list .menu-item{
+            border-left:5px solid #D4A017;
+            background:#FFFBEA;
+        }
+
+        #redvelvet-list .menu-item{
+            border-left:5px solid #C62828;
+            background:#FFF5F5;
+        }
+
+        #pancakes-list .menu-item{
+            border-left:5px solid #1565C0;
+            background:#F4F8FF;
+        }
+
+        #brownies-list .menu-item.selected{
+            background:#F3E5DC;
+        }
+
+        #waffles-list .menu-item.selected{
+            background:#FFF3CD;
+        }
+
+        #redvelvet-list .menu-item.selected{
+            background:#FFE0E0;
+        }
+
+        #pancakes-list .menu-item.selected{
+            background:#DDEBFF;
+        }
+        #hotchocolate-list .menu-item{
+            border-left:5px solid #8E44AD;
+            background:#F8F1FC;
+        }
+        #hotchocolate-list .menu-item.selected{
+            background:#EBDCF7;
+        }
+
+
+        .category-title.shawarma-title{
+            background:#16A085;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+        #shawarma-list .menu-item{
+            border-left:5px solid #16A085;
+            background:#EEFDF8;
+        }
+        #shawarma-list .menu-item.selected{
+            background:#D7F7EC;
+        }
+
+
+        .category-title.cookiepie-title{
+            background:#E67E22;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+        #cookiepie-list .menu-item{
+            border-left:5px solid #E67E22;
+            background:#FFF6EC;
+        }
+        #cookiepie-list .menu-item.selected{
+            background:#FFE7CC;
+        }
+
+        .category-title.cakes-title{
+            background:#C2185B;color:#fff;padding:8px 14px;border-radius:12px;opacity:1;
+        }
+        #cakes-list .menu-item{
+            border-left:5px solid #C2185B;
+            background:#FFF0F5;
+        }
+        #cakes-list .menu-item.selected{
+            background:#F8D7E5;
+        }
+
+
+        .header-brand { text-align:center; }
+        .admin-access-btn { position:absolute; right:14px; top:14px; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.14); color:#fff; border-radius:999px; padding:8px 11px; font-size:12px; font-weight:800; cursor:pointer; backdrop-filter:blur(8px); }
+        .admin-access-btn:active { transform:scale(.96); }
+        .admin-status { display:none; max-width:500px; margin:10px auto 0; padding:0 16px; }
+        .admin-status-inner { background:#fff; border:1px solid rgba(211,84,0,.10); border-radius:14px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:var(--shadow-premium); font-size:12px; font-weight:800; }
+        .admin-status-inner span:first-child { color:var(--success-color); }
+        .admin-logout-btn { border:none; background:#FAF4EE; color:var(--primary-color); border-radius:10px; padding:7px 10px; font-size:12px; font-weight:800; cursor:pointer; }
+        .success-page { display:none; min-height:calc(100vh - 130px); padding:28px 16px 130px; box-sizing:border-box; align-items:flex-start; justify-content:center; }
+        .success-card { width:100%; max-width:480px; background:#fff; border-radius:30px; padding:28px 20px; box-shadow:0 20px 55px rgba(44,26,17,.10); text-align:center; animation:successPop .45s cubic-bezier(.16,1,.3,1); }
+        @keyframes successPop { from {opacity:0;transform:translateY(18px) scale(.97)} to {opacity:1;transform:translateY(0) scale(1)} }
+        .success-check { width:78px;height:78px;margin:0 auto 16px;border-radius:50%;background:linear-gradient(135deg,#2ECC71,#27AE60);color:#fff;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 30px rgba(46,204,113,.22); }
+        .success-card h2 { margin:0 0 7px;font-size:25px;font-weight:900; }
+        .success-subtitle { margin:0 0 20px;color:var(--text-muted);font-size:13px;font-weight:600; }
+        .success-order-number { display:inline-block;background:#FDF2E9;color:var(--primary-color);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:900;margin-bottom:18px; }
+        .success-details { text-align:left;background:#FAF4EE;border-radius:18px;padding:14px;margin-bottom:16px; }
+        .success-detail-row { display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(44,26,17,.10);font-size:13px; }
+        .success-detail-row:last-child { border-bottom:0; }
+        .success-items { text-align:left;margin:14px 0 18px; }
+        .success-item { display:flex;justify-content:space-between;gap:10px;padding:9px 0;font-size:13px;border-bottom:1px solid rgba(44,26,17,.06); }
+        .success-total { display:flex;justify-content:space-between;align-items:center;padding-top:14px;margin-top:8px;border-top:2px solid var(--primary-color);color:var(--primary-color);font-size:20px;font-weight:900; }
+        .success-new-order { width:100%;border:none;background:linear-gradient(135deg,var(--primary-color),var(--accent-color));color:#fff;padding:15px;border-radius:16px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:var(--shadow-interactive); }
+        .login-help { text-align:center;color:var(--text-muted);font-size:11px;line-height:1.45;margin-top:12px; }
+        .admin-only { display:none; }
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <header style="position:relative;">
+        <button id="admin-access-btn" class="admin-access-btn" onclick="openAdminLogin()" aria-label="Admin login">
+            <i class="fas fa-lock"></i> Admin
+        </button>
+        <div class="header-brand">
+            <h1>Mad Over Waffle</h1>
+            <p id="header-subtitle">Order Online</p>
+        </div>
+    </header>
+
+    <div id="admin-status" class="admin-status">
+        <div class="admin-status-inner">
+            <span><i class="fas fa-shield-halved"></i> Admin Mode</span>
+            <button class="admin-logout-btn" onclick="logoutAdmin()">Logout</button>
+        </div>
+    </div>
+
+    <div class="tab-bar admin-only" id="admin-tab-bar">
+        <button id="tab-btn-order" class="tab-btn active" onclick="switchTab('order-view', event)">📝 Take Order</button>
+        <button id="tab-btn-dashboard" class="tab-btn" onclick="switchTab('dashboard-view', event)">📊 Dashboard</button>
+    </div>
+
+    <div id="order-view" class="app-section active">
+        <div class="menu-search-panel">
+            <div class="menu-search-box">
+                <i class="fas fa-search menu-search-icon"></i>
+                <input type="search" id="menu-search" placeholder="Search menu items..." autocomplete="off" oninput="filterMenu()">
+                <button type="button" id="menu-search-clear" class="menu-search-clear" onclick="clearMenuSearch()" aria-label="Clear search">✕</button>
+            </div>
+        </div>
+
+        <div id="menu-no-results" class="menu-no-results">
+            <i class="fas fa-search" style="font-size:22px;margin-bottom:10px;opacity:.5;"></i>
+            <div>No menu item found.</div>
+            <div style="font-size:12px;margin-top:4px;font-weight:500;">Try another search.</div>
+        </div>
+
+        <div class="category-title brownies-title">Brownies</div>
+        <div id="brownies-list"></div>
+
+        <div class="category-title waffles-title">Waffles</div>
+        <div id="waffles-list"></div>
+
+        <div class="category-title redvelvet-title">Red Velvet Waffle</div>
+        <div id="redvelvet-list"></div>
+
+        <div class="category-title pancakes-title">Pan Cakes</div>
+        <div id="pancakes-list"></div>
+
+        <div class="category-title hotchocolate-title">Hot Chocolate</div>
+        <div id="hotchocolate-list"></div>
+
+        <div class="category-title shawarma-title">Chocolate Shawarma</div>
+        <div id="shawarma-list"></div>
+
+        <div class="category-title cookiepie-title">Cookie Pie</div>
+        <div id="cookiepie-list"></div>
+
+        <div class="category-title cakes-title">Cakes</div>
+        <div id="cakes-list"></div>
+
+
+    <div id="whatsapp-order-option" class="admin-only" style="max-width:500px;margin:10px auto 0;padding:0 16px;">
+        <label style="display:flex;justify-content:space-between;align-items:center;font-weight:700;background:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.05);">
+<div style="display:flex;align-items:center;gap:10px;">
+<input type="checkbox" id="whatsapp-order" style="width:18px;height:18px;">
+<span><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp Order</span>
+</div>
+<span style="color:#25D366;font-size:14px;font-weight:800;">+₹10</span>
+</label>
+    </div>
+
+    </div>
+
+    <div id="order-success-view" class="success-page">
+        <div class="success-card">
+            <div class="success-check">✓</div>
+            <h2>Order Placed!</h2>
+            <p class="success-subtitle">Thank you for ordering from Mad Over Waffle.</p>
+            <div class="success-order-number" id="success-order-number">Order #1</div>
+            <div class="success-details">
+                <div class="success-detail-row"><span>Order time</span><strong id="success-order-time">--</strong></div>
+            </div>
+            <div class="success-items" id="success-items"></div>
+            <div class="success-total"><span>Final Amount</span><span id="success-total">₹0</span></div>
+            <button class="success-new-order" onclick="editLastCustomerOrder()"><i class="fas fa-pen"></i> Edit Order</button>
+        </div>
+    </div>
+
+    <div id="dashboard-view" class="app-section">
+        <div class="dashboard-card">
+            <div class="date-picker-container">
+                <span>Select Tracking Date</span>
+                <input type="date" id="dashboard-date" onchange="loadDashboardData()">
+            </div>
+
+            <div class="luxury-profit-display" style="margin-bottom: 24px;">
+                <div class="stat-title">Net Profits Gain (100%)</div>
+                <div class="stat-val" id="stat-profit">₹0</div>
+            </div>
+
+            <div id="graph-card" style="display: none;">
+                <div class="stat-title" style="color: var(--text-muted); margin-bottom: 12px; text-align: left;">Hourly Peak Sales Volume</div>
+                <div style="position: relative; height: 180px; width: 100%;">
+                    <canvas id="salesTimeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-title">Saved Daily Records</div>
+        <div id="orders-log-container"></div>
+    </div>
+
+        <div class="footer-action-bar" id="sticky-footer">
+        <div class="total-box">
+            <span class="total-label">Total Price</span>
+            <span class="total-amount" id="grand-total">₹0</span>
+        </div>
+        <button class="btn-submit" id="save-order-btn" onclick="openOrderConfirmationPopup()" disabled>Save Order</button>
+    </div>
+
+    <div class="modal-overlay" id="order-modal">
+        <div class="modal-card">
+            <div class="modal-title">Save Order Summary</div>
+            <div class="modal-items-list" id="modal-items-content"></div>
+            <div class="modal-total-row">
+                <span>Total Order Amount</span>
+                <span id="modal-grand-total">₹0</span>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeOrderModal()">Cancel</button>
+                <button class="btn-modal-confirm" onclick="confirmAndCommitOrder()">Confirm Save Order</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="admin-login-modal">
+        <div class="modal-card">
+            <div class="modal-title"><i class="fas fa-lock" style="color:var(--primary-color);"></i> Admin Login</div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:12px;font-weight:800;color:var(--text-muted);margin-bottom:6px;">ADMIN EMAIL</label>
+                <input id="admin-username" type="text" autocomplete="username" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid rgba(44,26,17,.12);border-radius:12px;outline:none;font-size:15px;">
+            </div>
+            <div style="margin-bottom:8px;">
+                <label style="display:block;font-size:12px;font-weight:800;color:var(--text-muted);margin-bottom:6px;">PASSWORD</label>
+                <input id="admin-password" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitAdminLogin()" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid rgba(44,26,17,.12);border-radius:12px;outline:none;font-size:15px;">
+            </div>
+            <div id="admin-login-error" style="display:none;color:var(--danger-color);font-size:12px;font-weight:700;text-align:center;margin:10px 0;"></div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeAdminLogin()">Cancel</button>
+                <button class="btn-modal-confirm" onclick="submitAdminLogin()"><i class="fas fa-unlock"></i> Login</button>
+            </div>
+            <div class="login-help">Admin access is hidden from the customer ordering screen.</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal-card">
+            <div class="modal-title" style="color: var(--danger-color); border-bottom-color: #FDEDEC;">Erase Order</div>
+            <div style="text-align: center; margin: 15px 0 25px 0; font-size: 15px; font-weight: 600; color: var(--text-main); line-height: 1.5;">
+                Are you sure you want to delete this order?<br>This action cannot be undone.
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-modal-confirm" style="background-color: var(--danger-color); box-shadow: 0 4px 12px rgba(231, 76, 60, 0.25);" onclick="confirmDeleteOrder()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+const menuData = {
+            brownies: [
+                { name: "Classic Brownie", price: 59 },
+                { name: "Double Chocolate Brownie", price: 69 },
+                { name: "Triple Chocolate Brownie", price: 79 },
+                { name: "Red Velvet Cream Cheese Brownie", price: 89 },
+                { name: "Nutella Brownie", price: 99 },
+                { name: "Pistachio Brownie", price: 99 }
+            ],
+            waffles: [
+                { name: "Strawberry Waffle", price: 59 },
+                { name: "Blueberry Waffle", price: 69 },
+                { name: "Butterscotch Waffle", price: 79 },
+                { name: "Milk Chocolate Waffle", price: 79 },
+                { name: "White Chocolate Waffle", price: 79 },
+                { name: "Dark Chocolate Waffle", price: 89 },
+                { name: "Caramel Chocolate Waffle", price: 89 },
+                { name: "Double Chocolate Waffle", price: 99 },
+                { name: "Chocolate Coffee Waffle", price: 99 },
+                { name: "Crunchy Almond Waffle", price: 99 },
+                { name: "Cookies and Cream (Oreo) Waffle", price: 99 },
+                { name: "Cotton Candy Waffle", price: 99 },
+                { name: "Triple Chocolate Waffle", price: 109 },
+                { name: "Hazelnut Waffle", price: 109 },
+                { name: "Kit Kat Waffle", price: 119 },
+                { name: "Nutella Waffle", price: 129 },
+                { name: "Biscoff Waffle", price: 139 },
+                { name: "MOW Special Ferrero Rocher Waffle", price: 139 },
+                { name: "Pistachio Waffle", price: 139 }
+            ],
+            redvelvet: [
+                { name: "Milk Chocolate Waffle (Red Velvet)", price: 99 },
+                { name: "White Chocolate Waffle (Red Velvet)", price: 99 },
+                { name: "Dark Chocolate Waffle (Red Velvet)", price: 99 },
+                { name: "Double Chocolate Waffle (Red Velvet)", price: 109 },
+                { name: "Triple Chocolate Waffle (Red Velvet)", price: 119 }
+            ],
+            pancakes: [
+                { name: "Milk Chocolate Pancake", price: 79 },
+                { name: "White Chocolate Pancake", price: 79 },
+                { name: "Dark Chocolate Pancake", price: 89 },
+                { name: "Double Chocolate Pancake", price: 99 },
+                { name: "Caramel Chocolate Pancake", price: 99 },
+                { name: "Oreo Chocolate Pancake", price: 99 },
+                { name: "Red Velvet Cream Cheese Pancake", price: 99 },
+                { name: "Triple Chocolate Pancake", price: 109 },
+                { name: "Hazelnut Chocolate Pancake", price: 119 }
+            ],
+            hotchocolate: [
+                { name: "Hot Chocolate", price: 69 }
+            ],
+            shawarma: [
+                { name: "Double Chocolate Shawarma", price: 99 },
+                { name: "Triple Chocolate Shawarma", price: 119 }
+            ],
+            cookiepie: [
+                { name: "Cookie Pie", price: 79 }
+            ],
+            cakes: [
+                { name: "Matilda Cake", price: 99 },
+                { name: "Double Chocolate Cake", price: 109 },
+                { name: "Triple Chocolate Cake", price: 119 }
+            ]
+        };
+
+
+        let orderCart = {};
+        let parcelCart = {}; // Keeps track of parcel count per item name
+        let pendingSavePayload = null;
+        let pendingDeleteTarget = null;
+        let salesChartInstance = null;
+        let editingOrderId = null; 
+        let editingOrderDate = null;
+let isWhatsappOrder = false;
+
+        function triggerPremiumNotification(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = '✨';
+            if (type === 'success') icon = '⚡';
+            if (type === 'danger') icon = '🗑️';
+            if (type === 'info') icon = '📝';
+
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('dismissing');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Firebase Auth is used for the real admin login. The old hard-coded credentials are no longer used.
+
+        let isAdminMode = false;
+
+        function initializeApplication() {
+            renderMenu();
+            document.getElementById('dashboard-date').value = getLocalDateString();
+            updateTotal();
+            const wa = document.getElementById('whatsapp-order');
+            if (wa) {
+                wa.checked = false;
+                wa.addEventListener('change', updateTotal);
+            }
+            isAdminMode = false;
+            applyModeUI();
+            showOrderView();
+        }
+
+        initializeApplication();
+
+        function applyModeUI() {
+            const tabBar = document.getElementById('admin-tab-bar');
+            const status = document.getElementById('admin-status');
+            const subtitle = document.getElementById('header-subtitle');
+            const adminButton = document.querySelector('.admin-access-btn');
+
+            if (isAdminMode) {
+                tabBar.style.display = 'flex';
+                status.style.display = 'block';
+                subtitle.innerText = 'Admin Order App';
+                adminButton.style.display = 'none';
+                document.getElementById('whatsapp-order-option').style.display = 'block';
+            } else {
+                tabBar.style.display = 'none';
+                status.style.display = 'none';
+                adminButton.style.display = 'inline-flex';
+                document.getElementById('whatsapp-order-option').style.display = 'none';
+                subtitle.innerText = 'Order Online';
+                adminButton.innerHTML = '<i class="fas fa-lock"></i> Admin';
+            }
+        }
+
+        function showOrderView() {
+            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('order-success-view').style.display = 'none';
+            document.getElementById('order-view').classList.add('active');
+            if (isAdminMode) {
+                document.getElementById('tab-btn-order').classList.add('active');
+                document.getElementById('tab-btn-dashboard').classList.remove('active');
+            }
+            document.getElementById('sticky-footer').style.display = 'flex';
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
+
+        function switchTab(tabId, event) {
+            if (!isAdminMode && tabId === 'dashboard-view') {
+                openAdminLogin();
+                return;
+            }
+            if (tabId === 'order-view') {
+                showOrderView();
+                return;
+            }
+            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('order-success-view').style.display = 'none';
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (event) event.currentTarget.classList.add('active');
+            else document.getElementById('tab-btn-dashboard').classList.add('active');
+            document.getElementById('sticky-footer').style.display = 'none';
+            if (tabId === 'dashboard-view') {
+                loadDashboardData();
+                window.scrollTo({top:0,behavior:'smooth'});
+            }
+        }
+
+        function openAdminLogin() {
+            document.getElementById('admin-login-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('admin-username').focus(), 50);
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('admin-login-modal').style.display = 'none';
+            document.getElementById('admin-login-error').style.display = 'none';
+            document.getElementById('admin-username').value = '';
+            document.getElementById('admin-password').value = '';
+        }
+
+        function submitAdminLogin() {
+            const username = document.getElementById('admin-username').value.trim();
+            const password = document.getElementById('admin-password').value;
+            if (window.mowFirebaseAdminLogin) {
+                window.mowFirebaseAdminLogin(username, password).then(() => {
+                    isAdminMode = true;
+                    closeAdminLogin();
+                    applyModeUI();
+                    showOrderView();
+                    triggerPremiumNotification('Admin mode enabled.', 'success');
+                }).catch((error) => {
+                    const errorBox = document.getElementById('admin-login-error');
+                    errorBox.innerText = 'Login failed. Check your User ID and password.';
+                    errorBox.style.display = 'block';
+                    document.getElementById('admin-password').select();
+                });
+            } else {
+                const error = document.getElementById('admin-login-error');
+                error.innerText = 'Incorrect admin credentials.';
+                error.style.display = 'block';
+                document.getElementById('admin-password').select();
+            }
+        }
+
+        function logoutAdmin() {
+            if (window.mowFirebaseLogout) window.mowFirebaseLogout();
+            isAdminMode = false;
+            applyModeUI();
+            resetOrderForm();
+            showOrderView();
+            triggerPremiumNotification('Returned to customer mode.', 'info');
+        }
+
+        function showCustomerSuccess(orderRecord, orderNumber) {
+            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('order-success-view').style.display = 'flex';
+            document.getElementById('sticky-footer').style.display = 'none';
+            document.getElementById('success-order-number').innerText = 'Order #' + orderNumber;
+            document.getElementById('success-order-time').innerText = orderRecord.time;
+                        const items = document.getElementById('success-items');
+            items.innerHTML = '';
+            orderRecord.items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'success-item';
+                const parcelText = item.parcelCount > 0 ? ` + ${item.parcelCount} parcel` : '';
+                row.innerHTML = `<span>${item.name} × ${item.qty}${parcelText}</span><strong>₹${item.totalCost}</strong>`;
+                items.appendChild(row);
+            });
+            if (orderRecord.whatsappOrder) {
+                const chargeRow = document.createElement('div');
+                chargeRow.className = 'success-item';
+                chargeRow.innerHTML = '<span><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp Order Charge</span><strong>₹10</strong>';
+                items.appendChild(chargeRow);
+            }
+            document.getElementById('success-total').innerText = '₹' + orderRecord.total;
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
+
+        function editLastCustomerOrder() {
+            const date = getLocalDateString();
+            const database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
+            const orders = database[date] || [];
+            if (!orders.length) {
+                showOrderView();
+                return;
+            }
+            const lastOrder = orders[orders.length - 1];
+            editingOrderId = lastOrder.id;
+            editingOrderDate = date;
+            window.editingOrderNumber = lastOrder.orderNumber || null;
+            window.editingCustomerUid = lastOrder.customerUid || null;
+            showOrderView();
+            setTimeout(() => {
+                if (typeof initiateEditOrder === 'function') initiateEditOrder(date, lastOrder.id);
+            }, 0);
+        }
+
+function startNewCustomerOrder() {
+            resetOrderForm();
+            showOrderView();
+        }
+
+        function renderMenu() {
+            for (let category in menuData) {
+                const listContainer = document.getElementById(`${category}-list`);
+                if (!listContainer) continue;
+                listContainer.innerHTML = ''; 
+                
+                menuData[category].forEach((item, index) => {
+                    const itemKey = item.name;
+                    orderCart[itemKey] = 0;
+                    parcelCart[itemKey] = 0;
+                    const safeId = category + "-" + index;
+
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'menu-item';
+                    itemElement.dataset.category = category;
+                    itemElement.dataset.itemName = item.name.toLowerCase();
+                    itemElement.innerHTML = `
+                        <div class="item-main-row">
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-price">₹${item.price}</div>
+                            </div>
+                            <div class="quantity-controls">
+                                <button class="btn-qty btn-qty-minus controls-hidden" id="btn-minus-${safeId}" onclick="changeQty('${itemKey}', '${safeId}', -1)">-</button>
+                                <span class="qty-count controls-hidden" id="${safeId}">0</span>
+                                <button class="btn-qty btn-qty-plus" onclick="changeQty('${itemKey}', '${safeId}', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="item-parcel-row controls-hidden" id="parcel-row-${safeId}">
+                            <span class="parcel-label">📦 Add Parcel Box (+ ₹10)</span>
+                            <div class="quantity-controls">
+                                <button class="btn-qty btn-qty-minus btn-parcel controls-hidden" id="btn-pminus-${safeId}" onclick="changeParcel('${itemKey}', '${safeId}', -1)">-</button>
+                                <span class="qty-count controls-hidden" id="pcount-${safeId}">0</span>
+                                <button class="btn-qty btn-qty-plus btn-parcel" onclick="changeParcel('${itemKey}', '${safeId}', 1)">+</button>
+                            </div>
+                        </div>
+                    `;
+                    listContainer.appendChild(itemElement);
+                });
+            }
+        }
+
+        function filterMenu() {
+            const searchInput = document.getElementById('menu-search');
+            const query = (searchInput?.value || '').trim().toLowerCase();
+            const clearButton = document.getElementById('menu-search-clear');
+            const noResults = document.getElementById('menu-no-results');
+
+            if (clearButton) {
+                clearButton.classList.toggle('visible', query.length > 0);
+            }
+
+            let visibleCount = 0;
+
+            for (const category in menuData) {
+                const listContainer = document.getElementById(`${category}-list`);
+                if (!listContainer) continue;
+
+                const categoryTitle = listContainer.previousElementSibling;
+                let categoryVisibleCount = 0;
+
+                listContainer.querySelectorAll('.menu-item').forEach(card => {
+                    const itemName = card.dataset.itemName || '';
+                    const matchesSearch = !query || itemName.includes(query);
+                    const shouldShow = matchesSearch;
+
+                    card.style.display = shouldShow ? '' : 'none';
+
+                    if (shouldShow) {
+                        categoryVisibleCount++;
+                        visibleCount++;
+                    }
+                });
+
+                if (categoryTitle) {
+                    categoryTitle.classList.toggle('filter-hidden', categoryVisibleCount === 0);
+                }
+            }
+
+            if (noResults) {
+                noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+        }
+
+        function clearMenuSearch() {
+            const searchInput = document.getElementById('menu-search');
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            filterMenu();
+        }
+
+        function changeQty(itemKey, elementId, change) {
+            let currentQty = orderCart[itemKey] || 0;
+            currentQty += change;
+            if (currentQty < 0) currentQty = 0;
+            
+            orderCart[itemKey] = currentQty;
+            
+            const targetCountEl = document.getElementById(elementId);
+            const targetMinusEl = document.getElementById(`btn-minus-${elementId}`);
+            const parcelRowEl = document.getElementById(`parcel-row-${elementId}`);
+            const menuItemCard = targetCountEl ? targetCountEl.closest('.menu-item') : null;
+
+            if (targetCountEl && targetMinusEl) {
+                targetCountEl.innerText = currentQty;
+                
+                if (currentQty > 0) {
+                    targetCountEl.classList.remove('controls-hidden');
+                    targetMinusEl.classList.remove('controls-hidden');
+                    if (parcelRowEl) parcelRowEl.classList.remove('controls-hidden');
+                    if (menuItemCard) menuItemCard.classList.add('selected');
+                } else {
+                    targetCountEl.classList.add('controls-hidden');
+                    targetMinusEl.classList.add('controls-hidden');
+                    if (parcelRowEl) parcelRowEl.classList.add('controls-hidden');
+                    if (menuItemCard) menuItemCard.classList.remove('selected');
+                    // Automatically drop parcel values back to 0 if parent item count hits 0
+                    parcelCart[itemKey] = 0;
+                    resetParcelViewRow(elementId);
+                }
+            }
+
+            // Enforce that parcel containers do not exceed item selection quantities
+            if (parcelCart[itemKey] > currentQty) {
+                parcelCart[itemKey] = currentQty;
+                syncParcelViewElements(itemKey, elementId);
+            }
+            updateTotal();
+        }
+
+        function changeParcel(itemKey, elementId, change) {
+            let currentParcel = parcelCart[itemKey] || 0;
+            let itemLimitMax = orderCart[itemKey] || 0;
+            
+            currentParcel += change;
+            if (currentParcel < 0) currentParcel = 0;
+            if (currentParcel > itemLimitMax) currentParcel = itemLimitMax;
+            
+            parcelCart[itemKey] = currentParcel;
+            syncParcelViewElements(itemKey, elementId);
+            updateTotal();
+        }
+
+        function syncParcelViewElements(itemKey, elementId) {
+            const currentParcel = parcelCart[itemKey] || 0;
+            const countEl = document.getElementById(`pcount-${elementId}`);
+            const minusEl = document.getElementById(`btn-pminus-${elementId}`);
+            
+            if (countEl && minusEl) {
+                countEl.innerText = currentParcel;
+                if (currentParcel > 0) {
+                    countEl.classList.remove('controls-hidden');
+                    minusEl.classList.remove('controls-hidden');
+                } else {
+                    countEl.classList.add('controls-hidden');
+                    minusEl.classList.add('controls-hidden');
+                }
+            }
+        }
+
+        function resetParcelViewRow(elementId) {
+            const countEl = document.getElementById(`pcount-${elementId}`);
+            const minusEl = document.getElementById(`btn-pminus-${elementId}`);
+            if (countEl && minusEl) {
+                countEl.innerText = 0;
+                countEl.classList.add('controls-hidden');
+                minusEl.classList.add('controls-hidden');
+            }
+        }
+
+        function calculateCartMetrics() {
+            let itemsOrdered = [];
+            let grossTotal = 0;
+            let deliveryCharge = document.getElementById('whatsapp-order')?.checked ? 10 : 0;
+
+            for (let category in menuData) {
+                menuData[category].forEach(item => {
+                    let qty = orderCart[item.name] || 0;
+                    let pCount = parcelCart[item.name] || 0;
+                    if (qty > 0) {
+                        let baseCost = qty * item.price;
+                        let parcelCost = pCount * 10;
+                        let rowCost = baseCost + parcelCost;
+                        
+                        itemsOrdered.push({ 
+                            name: item.name, 
+                            qty: qty, 
+                            parcelCount: pCount,
+                            unitPrice: item.price, 
+                            totalCost: rowCost 
+                        });
+                        grossTotal += rowCost;
+                    }
+                });
+            }
+
+            grossTotal += deliveryCharge;
+            return { itemsOrdered, grossTotal, deliveryCharge };
+        }
+
+        function updateTotal() {
+            const metrics = calculateCartMetrics();
+            document.getElementById('grand-total').innerText = '₹' + metrics.grossTotal;
+            
+            const saveBtn = document.getElementById('save-order-btn');
+            if (metrics.itemsOrdered.length > 0) {
+                saveBtn.disabled = false;
+            } else {
+                saveBtn.disabled = true;
+            }
+            
+            if (editingOrderId !== null) {
+                saveBtn.innerText = "Update Order";
+            } else {
+                saveBtn.innerText = "Save Order";
+            }
+        }
+
+        function getLocalDateString() {
+            const d = new Date();
+            const offset = d.getTimezoneOffset();
+            const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+            return localDate.toISOString().split('T')[0];
+        }
+
+        function openOrderConfirmationPopup() {
+            const data = calculateCartMetrics();
+            if (data.itemsOrdered.length === 0) return;
+
+            pendingSavePayload = data;
+            const container = document.getElementById('modal-items-content');
+            container.innerHTML = '';
+
+            data.itemsOrdered.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'modal-item-row';
+                
+                let detailString = `${item.name} <strong>x${item.qty}</strong>`;
+                if (item.parcelCount > 0) {
+                    detailString += ` <span style="color:var(--primary-color); font-size:12px;">(Parcel x${item.parcelCount})</span>`;
+                }
+
+                row.innerHTML = `
+                    <span>${detailString}</span>
+                    <span>₹${item.totalCost}</span>
+                `;
+                container.appendChild(row);
+            });
+
+            if (data.deliveryCharge > 0) {
+const row=document.createElement('div');
+row.className='modal-item-row';
+row.innerHTML='<span><i class="fab fa-whatsapp" style="color:#25D366"></i> WhatsApp Order Charge</span><span>₹10</span>';
+container.appendChild(row);
+}
+document.getElementById('modal-grand-total').innerText = '₹' + data.grossTotal;
+            document.getElementById('order-modal').style.display = 'flex';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').style.display = 'none';
+            pendingSavePayload = null;
+        }
+
+        async function confirmAndCommitOrder() {
+            if (!pendingSavePayload) return;
+            if (window.mowFirebaseAuthReady) {
+                try { await window.mowFirebaseAuthReady; } catch(e) {}
+            }
+
+            let targetDate = getLocalDateString();
+            let database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
+            let originalTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: true});
+            let existingItemsMap = {};
+
+            if (editingOrderId !== null && editingOrderDate !== null) {
+                targetDate = editingOrderDate;
+                if (database[targetDate]) {
+                    const originalOrder = database[targetDate].find(o => o.id === editingOrderId);
+                    if (originalOrder) {
+                        window.editingOrderNumber = originalOrder.orderNumber || null;
+                        window.editingCustomerUid = originalOrder.customerUid || null;
+                        if (originalOrder.time) originalTime = originalOrder.time;
+                        if (originalOrder.items) {
+                            originalOrder.items.forEach(oldItem => {
+                                existingItemsMap[oldItem.name] = oldItem.delivered || false;
+                            });
+                        }
+                    }
+                    database[targetDate] = database[targetDate].filter(order => order.id !== editingOrderId);
+                }
+            }
+
+            if (!database[targetDate]) {
+                database[targetDate] = [];
+            }
+
+            isWhatsappOrder = isAdminMode && (document.getElementById('whatsapp-order')?.checked || false);
+
+            const wasEditing = editingOrderId !== null;
+            let preservedOrderNumber = null;
+            let preservedCustomerUid = null;
+            if (wasEditing && database[targetDate]) {
+                // The original order was removed above, so retrieve its metadata from the pending local snapshot when available.
+                // For normal edits the original order number is also carried in editingOrderNumber.
+                preservedOrderNumber = window.editingOrderNumber || null;
+                preservedCustomerUid = window.editingCustomerUid || null;
+            }
+            if (!preservedOrderNumber) {
+                preservedOrderNumber = database[targetDate].reduce((max, o) => Math.max(max, Number(o.orderNumber) || 0), 0) + 1;
+            }
+            const cleanSaveRecord = {
+                whatsappOrder: isWhatsappOrder,
+                id: editingOrderId !== null ? editingOrderId : Date.now(),
+                orderNumber: preservedOrderNumber,
+                customerUid: preservedCustomerUid || (window.mowFirebaseCurrentUser && !isAdminMode ? window.mowFirebaseCurrentUser.uid : null),
+                time: originalTime,
+                items: pendingSavePayload.itemsOrdered.map(i => ({
+                    name: i.name,
+                    qty: i.qty,
+                    parcelCount: i.parcelCount,
+                    totalCost: i.totalCost,
+                    delivered: existingItemsMap[i.name] !== undefined ? existingItemsMap[i.name] : false
+                })),
+                total: pendingSavePayload.grossTotal
+            };
+
+            const orderNumber = cleanSaveRecord.orderNumber;
+            database[targetDate].push(cleanSaveRecord);
+            await window.mowRemoteSetDatabase(database);
+
+            closeOrderModal();
+            const messageText = wasEditing ? "Order updated successfully!" : "Order placed successfully!";
+            resetOrderForm();
+
+            if (!isAdminMode) {
+                showCustomerSuccess(cleanSaveRecord, orderNumber);
+            } else {
+                triggerPremiumNotification(messageText, "success");
+                if (isAdminMode) switchTab('dashboard-view');
+            }
+        }
+
+        function resetOrderForm() {
+            for (let key in orderCart) {
+                orderCart[key] = 0;
+                parcelCart[key] = 0;
+            }
+            document.querySelectorAll('.qty-count').forEach(span => {
+                span.innerText = '0';
+                span.classList.add('controls-hidden');
+            });
+            document.querySelectorAll('.btn-qty-minus').forEach(btn => {
+                btn.classList.add('controls-hidden');
+            });
+            document.querySelectorAll('.item-parcel-row').forEach(row => {
+                row.classList.add('controls-hidden');
+            });
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('selected'));
+            
+            editingOrderId = null;
+            editingOrderDate = null;
+            window.editingOrderNumber = null;
+            window.editingCustomerUid = null;
+            const wa=document.getElementById('whatsapp-order');
+            if(wa){wa.checked=false;}
+            updateTotal();
+        }
+
+        function loadDashboardData() {
+            calculateEodSummary();
+        }
+
+        function toggleHistoryItemDelivery(event, dateKey, orderId, itemIndex, uniqueDomId) {
+            if (event) event.preventDefault();
+
+            let database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
+            if (!database[dateKey]) return;
+
+            let order = database[dateKey].find(o => o.id === orderId);
+            if (!order || !order.items || !order.items[itemIndex]) return;
+
+            // Toggle Boolean Status
+            let newStatus = !order.items[itemIndex].delivered;
+            order.items[itemIndex].delivered = newStatus;
+
+            window.mowRemoteSetDatabase(database);
+            
+            // 1. Dynamic localized update of row elements to avoid full screen re-render / scroll jumps
+            const targetRow = document.getElementById(uniqueDomId);
+            if (targetRow) {
+                const checkbox = targetRow.querySelector('.history-item-checkbox');
+                const label = targetRow.querySelector('.order-item-history-text');
+                
+                if (newStatus) {
+                    if (checkbox) checkbox.classList.add('checked');
+                    if (label) label.classList.add('strike-delivered');
+                } else {
+                    if (checkbox) checkbox.classList.remove('checked');
+                    if (label) label.classList.remove('strike-delivered');
+                }
+            }
+
+            // 2. Synchronize outer full-order status card border (Green border condition matching toggles)
+            if (targetRow) {
+                const logCard = targetRow.closest('.order-log-card');
+                if (logCard) {
+                    let totalItemsCount = order.items.length;
+                    let deliveredItemsCount = order.items.filter(i => i.delivered).length;
+                    
+                    if (totalItemsCount > 0 && deliveredItemsCount === totalItemsCount) {
+                        logCard.classList.add('fully-delivered');
+                    } else {
+                        logCard.classList.remove('fully-delivered');
+                    }
+                }
+            }
+        }
+
+        function renderTimeBasedGraph(dayOrders) {
+            const graphCard = document.getElementById('graph-card');
+            if (dayOrders.length === 0) {
+                graphCard.style.display = 'none';
+                return;
+            }
+            graphCard.style.display = 'block';
+
+            let hourlyMetrics = {};
+
+            dayOrders.forEach(order => {
+                const parts = order.time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                if (!parts) return;
+                
+                let hour = parseInt(parts[1], 10);
+                const ampm = parts[3].toUpperCase();
+                
+                let indexingKey = hour;
+                if (ampm === 'PM' && hour < 12) indexingKey += 12;
+                if (ampm === 'AM' && hour === 12) indexingKey = 0;
+                
+                const label = `${hour} ${ampm}`;
+                if (!hourlyMetrics[indexingKey]) {
+                    hourlyMetrics[indexingKey] = { label: label, revenue: 0 };
+                }
+                hourlyMetrics[indexingKey].revenue += order.total;
+            });
+
+            const sortedKeys = Object.keys(hourlyMetrics).sort((a, b) => parseInt(a) - parseInt(b));
+            const labels = sortedKeys.map(k => hourlyMetrics[k].label);
+            const datasets = sortedKeys.map(k => hourlyMetrics[k].revenue);
+
+            if (salesChartInstance) {
+                salesChartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('salesTimeChart').getContext('2d');
+            
+            const gradientFill = ctx.createLinearGradient(0, 0, 0, 150);
+            gradientFill.addColorStop(0, 'rgba(211, 84, 0, 0.35)');
+            gradientFill.addColorStop(1, 'rgba(211, 84, 0, 0.00)');
+
+            salesChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Hourly Revenue',
+                        data: datasets,
+                        borderColor: '#D35400',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#E67E22',
+                        pointHoverBackgroundColor: '#2C1A11',
+                        pointRadius: 4,
+                        fill: true,
+                        backgroundColor: gradientFill,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#7A6E67', font: { weight: 700, size: 10 } } },
+                        y: { 
+                            grid: { borderDash: [5, 5], color: 'rgba(44, 26, 17, 0.08)' },
+                            ticks: { color: '#7A6E67', font: { size: 10 }, callback: value => '₹' + value }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        function getCategoryColor(itemName){
+            if(menuData.brownies.some(i=>i.name===itemName)) return '#F3E5DC';
+            if(menuData.waffles.some(i=>i.name===itemName)) return '#FFF3CD';
+            if(menuData.redvelvet.some(i=>i.name===itemName)) return '#FFE0E0';
+            if(menuData.pancakes.some(i=>i.name===itemName)) return '#DDEBFF';
+            if(menuData.hotchocolate.some(i=>i.name===itemName)) return '#EBDCF7';
+            if(menuData.shawarma.some(i=>i.name===itemName)) return '#D7F7EC';
+            if(menuData.cookiepie && menuData.cookiepie.some(i=>i.name===itemName)) return '#FFE7CC';
+            if(menuData.cakes && menuData.cakes.some(i=>i.name===itemName)) return '#F8D7E5';
+            return '#ffffff';
+        }
+
+        function calculateEodSummary() {
+            const picker = document.getElementById('dashboard-date');
+            if (!picker) return;
+            const targetDate = picker.value;
+            const database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
+            const dayOrders = database[targetDate] || [];
+            const logContainer = document.getElementById('orders-log-container');
+
+            let totalSales = 0;
+            logContainer.innerHTML = '';
+
+            renderTimeBasedGraph(dayOrders);
+
+            if (dayOrders.length === 0) {
+                logContainer.innerHTML = `<div class="no-orders">No sales data logged for selected timeline.</div>`;
+                document.getElementById('stat-profit').innerText = '₹0';
+                return;
+            }
+
+            dayOrders.forEach((order, index) => {
+                totalSales += order.total;
+
+                let totalItemsCount = order.items.length;
+                let deliveredItemsCount = 0;
+
+                let itemsListHtml = `<div class="order-items-list-container">`;
+                order.items.forEach((i, itemIdx) => {
+                    let isDelivered = i.delivered || false;
+                    if (isDelivered) {
+                        deliveredItemsCount++;
+                    }
+
+                    let text = `${i.qty}x ${i.name}`;
+                    if (i.parcelCount && i.parcelCount > 0) {
+                        text += ` (parcel x${i.parcelCount})`;
+                    }
+                    
+                    let strikeClass = isDelivered ? "order-item-history-text strike-delivered" : "order-item-history-text";
+                    let checkClass = isDelivered ? "history-item-checkbox checked" : "history-item-checkbox";
+                    let rowUniqueId = `item-row-${order.id}-${itemIdx}`;
+
+                    const itemBgColor = getCategoryColor(i.name);
+                    itemsListHtml += `
+                        <div class="order-item-history-row" id="${rowUniqueId}" style="background:${itemBgColor};padding:10px;border-radius:10px;">
+                            <div class="${checkClass}" onclick="toggleHistoryItemDelivery(event, '${targetDate}', ${order.id}, ${itemIdx}, '${rowUniqueId}')"></div>
+                            <span class="${strikeClass}" onclick="toggleHistoryItemDelivery(event, '${targetDate}', ${order.id}, ${itemIdx}, '${rowUniqueId}')">${text}</span>
+                        </div>
+                    `;
+                });
+                itemsListHtml += `</div>`;
+
+                // If all items within this order are ticked off, add custom green border CSS designation 
+                let fullyDeliveredClass = (totalItemsCount > 0 && deliveredItemsCount === totalItemsCount) ? "order-log-card fully-delivered" : "order-log-card";
+
+                const card = document.createElement('div');
+                card.className = fullyDeliveredClass;
+                card.innerHTML = `
+                    <div class="order-header">
+                        <span>Order #${order.orderNumber || index + 1} ${order.whatsappOrder ? '<span style="background:#25D366;color:#fff;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:700;"><i class="fab fa-whatsapp"></i> WhatsApp</span>' : ''}</span>
+                        <span>Time: ${order.time}</span>
+                    </div>
+                    ${itemsListHtml}
+                    <div class="order-footer">
+                        <div class="order-total-price">₹${order.total}</div>
+                        <div class="order-actions">
+                            <button class="btn-edit-history" onclick="initiateEditOrder('${targetDate}', ${order.id})">📝 Edit</button>
+                            <button class="btn-delete" onclick="openDeleteModal('${targetDate}', ${order.id})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+                logContainer.appendChild(card);
+            });
+
+            document.getElementById('stat-profit').innerText = '₹' + totalSales;
+        }
+
+        function initiateEditOrder(dateKey, orderId) {
+            const database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
+            if (!database[dateKey]) return;
+            
+            const targetOrder = database[dateKey].find(order => order.id === orderId);
+            if (!targetOrder) return;
+            window.editingOrderNumber = targetOrder.orderNumber || null;
+            window.editingCustomerUid = targetOrder.customerUid || null;
+
+            // Reset setup values back to 0
+            for (let key in orderCart) {
+                orderCart[key] = 0;
+                parcelCart[key] = 0;
+            }
+
+            // Restore WhatsApp charge state when editing an existing order
+            const wa = document.getElementById('whatsapp-order');
+            if (wa) wa.checked = !!targetOrder.whatsappOrder;
+
+            // Map data arrays from local db records
+            targetOrder.items.forEach(savedItem => {
+                orderCart[savedItem.name] = savedItem.qty;
+                parcelCart[savedItem.name] = savedItem.parcelCount || 0;
+            });
+
+            // Re-render UI inputs matching selection states
+            for (let category in menuData) {
+                menuData[category].forEach((item, index) => {
+                    const safeId = category + "-" + index;
+                    const itemQty = orderCart[item.name] || 0;
+                    const pCount = parcelCart[item.name] || 0;
+                    
+                    const countEl = document.getElementById(safeId);
+                    const minusEl = document.getElementById(`btn-minus-${safeId}`);
+                    const parcelRowEl = document.getElementById(`parcel-row-${safeId}`);
+                    const cardEl = countEl ? countEl.closest('.menu-item') : null;
+
+                    if (countEl && minusEl) {
+                        countEl.innerText = itemQty;
+                        if (itemQty > 0) {
+                            countEl.classList.remove('controls-hidden');
+                            minusEl.classList.remove('controls-hidden');
+                            if (parcelRowEl) parcelRowEl.classList.remove('controls-hidden');
+                            if (cardEl) cardEl.classList.add('selected');
+                        } else {
+                            countEl.classList.add('controls-hidden');
+                            minusEl.classList.add('controls-hidden');
+                            if (parcelRowEl) parcelRowEl.classList.add('controls-hidden');
+                            if (cardEl) cardEl.classList.remove('selected');
+                        }
+                    }
+
+                    // Synchronize matching item parcel elements
+                    const pCountEl = document.getElementById(`pcount-${safeId}`);
+                    const pMinusEl = document.getElementById(`btn-pminus-${safeId}`);
+                    if (pCountEl && pMinusEl) {
+                        pCountEl.innerText = pCount;
+                        if (pCount > 0) {
+                            pCountEl.classList.remove('controls-hidden');
+                            pMinusEl.classList.remove('controls-hidden');
+                        } else {
+                            pCountEl.classList.add('controls-hidden');
+                            pMinusEl.classList.add('controls-hidden');
+                        }
+                    }
+                });
+            }
+
+            editingOrderId = orderId;
+            editingOrderDate = dateKey;
+
+            switchTab('order-view');
+            updateTotal();
+            triggerPremiumNotification("Loaded historical record for editing.", "info");
+        }
+
+        function openDeleteModal(dateKey, orderId) {
+            pendingDeleteTarget = { dateKey, orderId };
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'none';
+            pendingDeleteTarget = null;
+        }
+
+        function confirmDeleteOrder() {
+            if (!pendingDeleteTarget) return;
+            
+            const { dateKey, orderId } = pendingDeleteTarget;
+            let database = JSON.parse(localStorage.getItem('mow_sales_db')) || {};
+            
+            if (database[dateKey]) {
+                database[dateKey] = database[dateKey].filter(order => order.id !== orderId);
+                if (database[dateKey].length === 0) delete database[dateKey];
+                
+                window.mowRemoteSetDatabase(database);
+                calculateEodSummary();
+                
+                if (editingOrderId === orderId) {
+                    resetOrderForm();
+                }
+                
+                triggerPremiumNotification("Order record successfully removed.", "danger");
+            }
+            
+            closeDeleteModal();
+        }
+    </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+// 1) Create a Firebase project and add a Web App.
+// 2) Paste the config object from Firebase Console below.
+// 3) The admin uses the simple User ID "admin". Firebase uses an internal email-style identifier behind the scenes.
+const firebaseConfig = {
+    apiKey: "AIzaSyCE83eg5AI7Clc_wIjoWamPyKS94qZV3Os",
+    authDomain: "mad-over-waffle.firebaseapp.com",
+    projectId: "mad-over-waffle",
+    storageBucket: "mad-over-waffle.firebasestorage.app",
+    messagingSenderId: "349702746570",
+    appId: "1:349702746570:web:54ef7f39b39126627a1f33"
+};
+const ADMIN_EMAIL = "admin@madoverwaffle.app";
+const ADMIN_USERNAME = "admin";
+
+let fbApp = null, fbAuth = null, fbDb = null, unsubscribeOrders = null;
+let fbReady = false;
+let remoteCache = {};
+let currentUser = null;
+let firebaseAuthReadyResolve;
+const firebaseAuthReady = new Promise(resolve => { firebaseAuthReadyResolve = resolve; });
+
+function configured() {
+    return firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("PASTE_") &&
+           firebaseConfig.projectId && !firebaseConfig.projectId.includes("PASTE_") &&
+           ADMIN_EMAIL && !ADMIN_EMAIL.includes("PASTE_");
+}
+
+function isAdminUser(user = currentUser) {
+    return !!(user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+}
+
+function writeLocalCache(database) {
+    remoteCache = database || {};
+    try { localStorage.setItem('mow_sales_db', JSON.stringify(remoteCache)); } catch(e) {}
+    if (typeof window.calculateEodSummary === 'function' && window.isAdminMode) {
+        window.calculateEodSummary();
+    }
+}
+
+function rebuildCache(snapshot) {
+    const db = {};
+    snapshot.forEach(snap => {
+        const data = snap.data();
+        if (!data.dateKey) return;
+        if (!db[data.dateKey]) db[data.dateKey] = [];
+        db[data.dateKey].push({
+            id: data.orderId,
+            orderNumber: data.orderNumber || null,
+            customerUid: data.customerUid || null,
+            whatsappOrder: !!data.whatsappOrder,
+            time: data.time || '',
+            items: Array.isArray(data.items) ? data.items : [],
+            total: Number(data.total) || 0
+        });
+    });
+    Object.keys(db).forEach(k => db[k].sort((a,b) => (Number(a.orderNumber)||999999) - (Number(b.orderNumber)||999999)));
+    writeLocalCache(db);
+}
+
+function startOrderListener(user) {
+    if (unsubscribeOrders) { unsubscribeOrders(); unsubscribeOrders = null; }
+    if (!user) return;
+    const ordersRef = collection(fbDb, 'orders');
+    const q = isAdminUser(user) ? ordersRef : query(ordersRef, where('customerUid', '==', user.uid));
+    unsubscribeOrders = onSnapshot(q, rebuildCache, err => {
+        console.error('Firestore order listener:', err);
+        if (typeof window.triggerPremiumNotification === 'function') window.triggerPremiumNotification('Could not sync orders. Check your internet connection.', 'danger');
+    });
+}
+
+async function syncDatabase(database) {
+    if (!fbReady || !currentUser) return;
+    const admin = isAdminUser(currentUser);
+    const visibleOrders = [];
+    Object.entries(database || {}).forEach(([dateKey, orders]) => {
+        (orders || []).forEach(order => {
+            if (!order || order.id == null) return;
+            // Customers can only write their own orders. Admin can write any order.
+            if (!admin && order.customerUid && order.customerUid !== currentUser.uid) return;
+            visibleOrders.push({dateKey, order});
+        });
+    });
+
+    const desiredIds = new Set();
+    const writes = [];
+    for (const {dateKey, order} of visibleOrders) {
+        const id = `${dateKey}_${order.id}`;
+        desiredIds.add(id);
+        const owner = order.customerUid || (admin ? (order.customerUid || currentUser.uid) : currentUser.uid);
+        const payload = {
+            dateKey, orderId: Number(order.id), orderNumber: Number(order.orderNumber) || null,
+            customerUid: owner, whatsappOrder: !!order.whatsappOrder, time: order.time || '',
+            items: Array.isArray(order.items) ? order.items : [], total: Number(order.total) || 0,
+            updatedAt: serverTimestamp()
+        };
+        if (!order.createdAt) payload.createdAt = serverTimestamp();
+        writes.push(setDoc(doc(fbDb, 'orders', id), payload, {merge:true}));
+    }
+    await Promise.all(writes);
+
+    // Only an admin is allowed to delete missing records. A customer edit/delete is handled by ownership rules.
+    if (admin) {
+        const existingIds = new Set();
+        Object.entries(remoteCache).forEach(([dateKey, orders]) => (orders || []).forEach(order => existingIds.add(`${dateKey}_${order.id}`)));
+        const deletes = [];
+        existingIds.forEach(id => { if (!desiredIds.has(id)) deletes.push(deleteDoc(doc(fbDb, 'orders', id))); });
+        if (deletes.length) await Promise.all(deletes);
+    }
+}
+
+async function bootFirebase() {
+    if (!configured()) {
+        console.warn('Firebase is not configured yet. The app will use local browser storage until the config is filled in.');
+        return;
+    }
+    try {
+        fbApp = initializeApp(firebaseConfig);
+        fbAuth = getAuth(fbApp);
+        fbDb = getFirestore(fbApp);
+        fbReady = true;
+        onAuthStateChanged(fbAuth, async user => {
+            currentUser = user;
+            window.mowFirebaseCurrentUser = user;
+            if (user && firebaseAuthReadyResolve) { firebaseAuthReadyResolve(user); firebaseAuthReadyResolve = null; }
+            startOrderListener(user);
+            if (!user) {
+                try { await signInAnonymously(fbAuth); } catch(e) { console.error('Anonymous sign-in failed:', e); }
+            }
+        });
+    } catch (e) {
+        console.error('Firebase initialization failed:', e);
+    }
+}
+
+window.mowFirebaseAdminLogin = async (username, password) => {
+    if (!fbReady) throw new Error('Firebase is not configured.');
+    if (!username || username.trim().toLowerCase() !== ADMIN_USERNAME) throw new Error('Invalid admin user ID.');
+    await signInWithEmailAndPassword(fbAuth, ADMIN_EMAIL, password);
+};
+window.mowFirebaseLogout = async () => {
+    if (!fbReady) return;
+    try { await signOut(fbAuth); } catch(e) {}
+};
+window.mowRemoteSetDatabase = async (database) => {
+    try {
+        localStorage.setItem('mow_sales_db', JSON.stringify(database));
+        if (fbReady && !currentUser) {
+            try { await Promise.race([firebaseAuthReady, new Promise(resolve => setTimeout(resolve, 8000))]); } catch(e) {}
+        }
+        await syncDatabase(database);
+    } catch(e) {
+        console.error('Firestore save failed:', e);
+        if (typeof window.triggerPremiumNotification === 'function') window.triggerPremiumNotification('Order saved locally but could not sync online.', 'danger');
+    }
+};
+
+// Expose the flag/functions used by the existing inline app code.
+window.mowFirebaseReady = () => fbReady;
+window.mowFirebaseCurrentUser = null;
+window.mowFirebaseAuthReady = firebaseAuthReady;
+bootFirebase();
+</script>
+
+
+<script>
+window.isAdminMode = false;
+window.calculateEodSummary = typeof calculateEodSummary === 'function' ? calculateEodSummary : null;
+window.triggerPremiumNotification = typeof triggerPremiumNotification === 'function' ? triggerPremiumNotification : null;
+</script>
+</body>
+</html>
